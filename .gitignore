@@ -1,0 +1,198 @@
+# -----------------------------------------------------------------------------
+# OS and filesystem noise
+# -----------------------------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# -----------------------------------------------------------------------------
+# Local environment, secrets, and credentials
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+.envrc
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+config/local.*
+local_settings.py
+
+# -----------------------------------------------------------------------------
+# Python virtual environments
+# -----------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.conda/
+.mamba/
+envs/
+__pypackages__/
+
+# -----------------------------------------------------------------------------
+# Python cache, build, and packaging output
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.dylib
+.Python
+.python-version
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+wheelhouse/
+site/
+
+# -----------------------------------------------------------------------------
+# Test, lint, type-check, and coverage caches
+# -----------------------------------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.cache/
+
+# -----------------------------------------------------------------------------
+# Jupyter and notebook runtime files
+# Keep .ipynb notebooks tracked; ignore generated checkpoints and local kernels.
+# -----------------------------------------------------------------------------
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+.jupyter/
+.ipython/
+*.nbconvert.ipynb
+
+# -----------------------------------------------------------------------------
+# Project datasets
+# This repo currently contains large raw/interim/processed data under Data/.
+# Keep folder docs/placeholders trackable when needed.
+# -----------------------------------------------------------------------------
+/[Dd]ata/**
+!/[Dd]ata/
+!/[Dd]ata/**/
+!/[Dd]ata/**/.gitkeep
+!/[Dd]ata/**/README*
+
+# -----------------------------------------------------------------------------
+# Experiment and prediction artifacts
+# Results stay out of git, but Models/ is intentionally trackable for upload.
+# -----------------------------------------------------------------------------
+/[Rr]esults/**
+!/[Rr]esults/
+!/[Rr]esults/**/
+!/[Rr]esults/**/.gitkeep
+!/[Rr]esults/**/README*
+
+artifacts/
+checkpoints/
+outputs/
+runs/
+mlruns/
+wandb/
+lightning_logs/
+tensorboard/
+
+# Common ML/data artifact formats
+*.ckpt
+*.joblib
+*.pkl
+*.pickle
+*.sav
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.keras
+*.onnx
+*.npy
+*.npz
+*.parquet
+*.feather
+
+# Keep the trained model bundle in this project uploadable.
+!/[Mm]odels/
+!/[Mm]odels/**
+.DS_Store
+
+# -----------------------------------------------------------------------------
+# Generated validation reports
+# Keep report docs/placeholders trackable when needed.
+# -----------------------------------------------------------------------------
+/[Rr]eports/**
+!/[Rr]eports/
+!/[Rr]eports/**/
+!/[Rr]eports/**/.gitkeep
+!/[Rr]eports/**/README*
+
+# -----------------------------------------------------------------------------
+# Databases and local storage
+# -----------------------------------------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+
+# -----------------------------------------------------------------------------
+# Logs, temporary files, and archives
+# -----------------------------------------------------------------------------
+logs/
+*.log
+*.out
+*.err
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# -----------------------------------------------------------------------------
+# Frontend/node artifacts if a dashboard is added later
+# -----------------------------------------------------------------------------
+node_modules/
+.npm/
+.pnpm-store/
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+pnpm-debug.log*
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+
+# -----------------------------------------------------------------------------
+# IDE/editor files
+# Team-shareable VS Code files can still be committed.
+# -----------------------------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.code-workspace
