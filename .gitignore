@@ -1,12 +1,18 @@
+# Project: environmental pollution forecasting notebooks
+# Repo scan summary:
+# - Source/docs: README.md and Notebook/*.ipynb
+# - Local/generated: .venv/, .env, Data/, Reports/, most model outputs,
+#   Notebook/catboost_info/
+
 # -----------------------------------------------------------------------------
 # OS and filesystem noise
 # -----------------------------------------------------------------------------
 .DS_Store
 ._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
+.Spotlight-V100/
+.Trashes/
 Thumbs.db
+ehthumbs.db
 Desktop.ini
 
 # -----------------------------------------------------------------------------
@@ -27,7 +33,7 @@ config/local.*
 local_settings.py
 
 # -----------------------------------------------------------------------------
-# Python virtual environments
+# Python virtual environments and interpreter-local files
 # -----------------------------------------------------------------------------
 .venv/
 venv/
@@ -37,6 +43,7 @@ ENV/
 .mamba/
 envs/
 __pypackages__/
+.python-version
 
 # -----------------------------------------------------------------------------
 # Python cache, build, and packaging output
@@ -47,7 +54,6 @@ __pycache__/
 *.so
 *.dylib
 .Python
-.python-version
 build/
 dist/
 *.egg-info/
@@ -73,7 +79,7 @@ htmlcov/
 
 # -----------------------------------------------------------------------------
 # Jupyter and notebook runtime files
-# Keep .ipynb notebooks tracked; ignore generated checkpoints and local kernels.
+# Keep Notebook/*.ipynb trackable; ignore generated checkpoints and local kernels.
 # -----------------------------------------------------------------------------
 .ipynb_checkpoints/
 */.ipynb_checkpoints/
@@ -82,26 +88,10 @@ htmlcov/
 *.nbconvert.ipynb
 
 # -----------------------------------------------------------------------------
-# Project datasets
-# This repo currently contains large raw/interim/processed data under Data/.
-# Keep folder docs/placeholders trackable when needed.
+# Notebook and training run outputs
 # -----------------------------------------------------------------------------
-/[Dd]ata/**
-!/[Dd]ata/
-!/[Dd]ata/**/
-!/[Dd]ata/**/.gitkeep
-!/[Dd]ata/**/README*
-
-# -----------------------------------------------------------------------------
-# Experiment and prediction artifacts
-# Results stay out of git, but Models/ is intentionally trackable for upload.
-# -----------------------------------------------------------------------------
-/[Rr]esults/**
-!/[Rr]esults/
-!/[Rr]esults/**/
-!/[Rr]esults/**/.gitkeep
-!/[Rr]esults/**/README*
-
+Notebook/catboost_info/
+catboost_info/
 artifacts/
 checkpoints/
 outputs/
@@ -110,8 +100,42 @@ mlruns/
 wandb/
 lightning_logs/
 tensorboard/
+logs/
 
-# Common ML/data artifact formats
+# -----------------------------------------------------------------------------
+# Project datasets
+# Data/ currently contains raw and processed AQI datasets, including a 2 GB tree.
+# Keep directory docs/placeholders trackable when needed.
+# -----------------------------------------------------------------------------
+/[Dd]ata/**
+!/[Dd]ata/
+!/[Dd]ata/**/
+!/[Dd]ata/**/.gitkeep
+!/[Dd]ata/**/README*
+
+# -----------------------------------------------------------------------------
+# Generated reports and plots
+# Reports/ contains EDA summaries and figures regenerated from notebooks.
+# Keep directory docs/placeholders trackable when needed.
+# -----------------------------------------------------------------------------
+/[Rr]eports/**
+!/[Rr]eports/
+!/[Rr]eports/**/
+!/[Rr]eports/**/.gitkeep
+!/[Rr]eports/**/README*
+
+# -----------------------------------------------------------------------------
+# Trained model artifacts and prediction dumps
+# Keep only the artifacts required by Notebook/07_inference.ipynb uploadable.
+# -----------------------------------------------------------------------------
+/[Mm]odels/**
+!/[Mm]odels/
+!/[Mm]odels/**/
+!/[Mm]odels/**/.gitkeep
+!/[Mm]odels/**/README*
+
+# Common ML/data artifact formats that may be emitted outside project folders.
+*.cbm
 *.ckpt
 *.joblib
 *.pkl
@@ -127,21 +151,16 @@ tensorboard/
 *.npz
 *.parquet
 *.feather
+events.out.tfevents*
 
-# Keep the trained model bundle in this project uploadable.
-!/[Mm]odels/
-!/[Mm]odels/**
-.DS_Store
-
-# -----------------------------------------------------------------------------
-# Generated validation reports
-# Keep report docs/placeholders trackable when needed.
-# -----------------------------------------------------------------------------
-/[Rr]eports/**
-!/[Rr]eports/
-!/[Rr]eports/**/
-!/[Rr]eports/**/.gitkeep
-!/[Rr]eports/**/README*
+# Required inference bundle.
+!/[Mm]odels/best_tree_model.txt
+!/[Mm]odels/catboost_model.cbm
+!/[Mm]odels/lightgbm_model.pkl
+!/[Mm]odels/xgboost_model.json
+!/[Mm]odels/robust_scaler.pkl
+!/[Mm]odels/selected_features.pkl
+!/[Mm]odels/ensemble_info.pkl
 
 # -----------------------------------------------------------------------------
 # Databases and local storage
@@ -153,7 +172,6 @@ tensorboard/
 # -----------------------------------------------------------------------------
 # Logs, temporary files, and archives
 # -----------------------------------------------------------------------------
-logs/
 *.log
 *.out
 *.err
@@ -187,7 +205,7 @@ pnpm-debug.log*
 
 # -----------------------------------------------------------------------------
 # IDE/editor files
-# Team-shareable VS Code files can still be committed.
+# Team-shareable VS Code settings can still be committed.
 # -----------------------------------------------------------------------------
 .idea/
 .vscode/*
