@@ -1,94 +1,49 @@
-# =============================================================================
-# .gitignore
-# Project : AI-Based Environmental Pollution Forecasting System
-#           Personal Health Alerts & Smart Route Planning
-# Stack   : FastAPI · PostgreSQL · SQLAlchemy · Alembic · JWT
-#           React · Vite · Tailwind CSS v4 · Framer Motion
-#           Python 3.14 · Node.js · Jupyter · CatBoost · LightGBM · XGBoost
-# OS      : macOS (primary) · Linux (server)
-# Editor  : VS Code
-# =============================================================================
+# AI-Based Environmental Pollution Forecasting System
+# Stack: FastAPI, PostgreSQL, SQLAlchemy, Alembic, React, Vite, Jupyter, ML models
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 1. OPERATING SYSTEM
-# ─────────────────────────────────────────────────────────────────────────────
-
-# macOS
+# ---------------------------------------------------------------------------
+# Operating system files
+# ---------------------------------------------------------------------------
 .DS_Store
 .DS_Store?
 ._*
-.AppleDouble
-.LSOverride
-.Spotlight-V100
-.Trashes
-.fseventsd
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-
-# Windows
+.Spotlight-V100/
+.Trashes/
 Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
 Desktop.ini
 $RECYCLE.BIN/
 *.lnk
 
-# Linux
-*~
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 2. SECRETS & ENVIRONMENT VARIABLES
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Never commit real .env files — only the example template
+# ---------------------------------------------------------------------------
+# Secrets and local environment
+# ---------------------------------------------------------------------------
 .env
 .env.*
 !.env.example
 !.env.sample
-
 .envrc
 
-# SSL / TLS / Key material
 *.pem
 *.key
 *.crt
+*.cer
 *.p12
 *.pfx
-*.cer
-
-# Secret directories
 secrets/
 credentials/
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 3. PYTHON — VIRTUAL ENVIRONMENTS
-# ─────────────────────────────────────────────────────────────────────────────
-
-# All common venv directory names
+# ---------------------------------------------------------------------------
+# Python backend
+# ---------------------------------------------------------------------------
 .venv/
 venv/
 env/
 ENV/
-.env/
 .conda/
 .mamba/
 envs/
 __pypackages__/
 .python-version
-Pipfile.lock
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 4. PYTHON — CACHE, BUILD & PACKAGING
-# ─────────────────────────────────────────────────────────────────────────────
 
 __pycache__/
 *.py[cod]
@@ -97,23 +52,12 @@ __pycache__/
 *.dylib
 .Python
 
-# Build / distribution
 build/
 dist/
 *.egg-info/
 .eggs/
 pip-wheel-metadata/
 wheelhouse/
-site/
-MANIFEST
-
-# Type stubs
-*.pyi
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 5. PYTHON — TESTING, LINTING & TYPE-CHECKING
-# ─────────────────────────────────────────────────────────────────────────────
 
 .pytest_cache/
 .mypy_cache/
@@ -122,39 +66,22 @@ MANIFEST
 .tox/
 .nox/
 .cache/
-
-# Coverage
 .coverage
 .coverage.*
 coverage.xml
 htmlcov/
-nosetests.xml
 test-results/
 junit.xml
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 6. FASTAPI / UVICORN
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Uvicorn/Gunicorn process files
 *.pid
-gunicorn.conf.py.local
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 7. ALEMBIC — MIGRATION ARTIFACTS
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Keep the entire alembic/ directory tracked.
-# Only ignore auto-generated backup files.
+# Alembic migrations should be committed. Only ignore bytecode/backups.
 backend/alembic/versions/*.pyc
+backend/alembic/versions/*.bak
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 8. POSTGRESQL / DATABASES
-# ─────────────────────────────────────────────────────────────────────────────
-
+# ---------------------------------------------------------------------------
+# PostgreSQL and local databases
+# ---------------------------------------------------------------------------
 *.db
 *.sqlite
 *.sqlite3
@@ -162,13 +89,9 @@ backend/alembic/versions/*.pyc
 pgdata/
 postgres-data/
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 9. JUPYTER NOTEBOOKS
-# Keep all .ipynb files in Notebook/ tracked.
-# Ignore runtime-generated checkpoints and local kernel state.
-# ─────────────────────────────────────────────────────────────────────────────
-
+# ---------------------------------------------------------------------------
+# Jupyter notebooks
+# ---------------------------------------------------------------------------
 .ipynb_checkpoints/
 */.ipynb_checkpoints/
 **/.ipynb_checkpoints/
@@ -178,32 +101,22 @@ postgres-data/
 profile_default/
 ipython_config.py
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 10. MACHINE LEARNING — TRAINING ARTIFACTS
-# CatBoost, LightGBM, XGBoost, scikit-learn training run outputs.
-# The final inference bundle inside backend/app/models/ and models/ is KEPT.
-# ─────────────────────────────────────────────────────────────────────────────
-
-# CatBoost training run directories (generated during notebook training)
+# ---------------------------------------------------------------------------
+# Machine learning outputs
+# ---------------------------------------------------------------------------
 catboost_info/
 Notebook/catboost_info/
 backend/catboost_info/
 
-# MLflow / Weights & Biases / TensorBoard experiment tracking
 mlruns/
 wandb/
 lightning_logs/
 tensorboard/
 runs/
-
-# Training checkpoints and intermediate model dumps
 checkpoints/
 artifacts/
 outputs/
 
-# Common ML artifact extensions — ignored GLOBALLY
-# (the specific required inference files are re-allowed below)
 *.cbm
 *.ckpt
 *.joblib
@@ -222,10 +135,8 @@ outputs/
 *.feather
 events.out.tfevents.*
 
-
-# ── Re-allow the required inference bundle ────────────────────────────────────
-
-# backend/app/models/ — served by FastAPI prediction layer (Week 3+)
+# Required backend inference bundle.
+!backend/app/models/
 !backend/app/models/catboost_model.cbm
 !backend/app/models/lightgbm_model.pkl
 !backend/app/models/xgboost_model.json
@@ -233,35 +144,26 @@ events.out.tfevents.*
 !backend/app/models/selected_features.pkl
 !backend/app/models/ensemble_info.pkl
 
-# models/ — results and artefacts used by Notebook/07_inference.ipynb
+# Current notebook result files kept in the repository.
+!models/
 !models/best_tree_model.txt
-!models/tree_predictions.csv
 !models/tree_model_results.csv
+!models/tree_predictions.csv
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 11. DATASETS
-# Raw and processed AQI/pollution datasets are large; keep only placeholders.
-# ─────────────────────────────────────────────────────────────────────────────
-
+# ---------------------------------------------------------------------------
+# Datasets and generated reports
+# ---------------------------------------------------------------------------
 /Data/**
 !/Data/
 !/Data/**/
 !/Data/**/.gitkeep
 !/Data/**/README*
-!/Data/**/README.md
 
 /data/**
 !/data/
 !/data/**/
 !/data/**/.gitkeep
 !/data/**/README*
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 12. REPORTS & GENERATED PLOTS
-# EDA summaries and figures regenerated from notebooks.
-# ─────────────────────────────────────────────────────────────────────────────
 
 /Reports/**
 !/Reports/
@@ -275,52 +177,44 @@ events.out.tfevents.*
 !/reports/**/.gitkeep
 !/reports/**/README*
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 13. NODE.JS / FRONTEND (Vite + React)
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Dependencies — never commit
+# ---------------------------------------------------------------------------
+# React/Vite frontend
+# ---------------------------------------------------------------------------
 node_modules/
+frontend/node_modules/
+
 .npm/
 .pnpm-store/
 .yarn/
 
-# Package manager debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.pnpm-debug.log*
 lerna-debug.log*
 
-# Vite build output
 frontend/dist/
+frontend/dist-ssr/
 frontend/.vite/
 dist/
+dist-ssr/
 .vite/
 
-# Framework-specific build caches (in case the project adds SSR later)
 .next/
 .nuxt/
 .svelte-kit/
 .output/
 .vercel/
 .netlify/
+storybook-static/
 
-# Environment variable files for Vite
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
 
-# Storybook (if added later)
-storybook-static/
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 14. LOGS & TEMPORARY FILES
-# ─────────────────────────────────────────────────────────────────────────────
-
+# ---------------------------------------------------------------------------
+# Logs, temp files, and archives
+# ---------------------------------------------------------------------------
 *.log
 *.out
 *.err
@@ -328,19 +222,12 @@ logs/
 tmp/
 temp/
 .tmp/
-
-# Editor swap / backup files
 *.tmp
 *.bak
 *.swp
 *.swo
 *~
 *.orig
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 15. ARCHIVES
-# ─────────────────────────────────────────────────────────────────────────────
 
 *.zip
 *.tar
@@ -351,61 +238,23 @@ temp/
 *.7z
 *.gz
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 16. IDE & EDITOR FILES
-# ─────────────────────────────────────────────────────────────────────────────
-
-# JetBrains (PyCharm, WebStorm, etc.)
+# ---------------------------------------------------------------------------
+# Editors and local tooling
+# ---------------------------------------------------------------------------
+.vscode/
 .idea/
 *.iml
 *.iws
 *.ipr
+*.code-workspace
 out/
 
-# VS Code — ignore user-specific workspace state,
-# but keep shared team configuration files
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/tasks.json
-*.code-workspace
-
-# Vim / Neovim
-*.swp
-*.swo
 .netrwhist
-
-# Emacs
 \#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
 .\#*
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 17. DOCKER (for future deployment)
-# ─────────────────────────────────────────────────────────────────────────────
+auto-save-list/
 
 .docker/
 docker-compose.override.yml
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 18. MISCELLANEOUS PROJECT-SPECIFIC
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Antigravity / AI tooling scratch files
 .gemini/
-
-# macOS Xcode
-*.xcodeproj/
-xcuserdata/
