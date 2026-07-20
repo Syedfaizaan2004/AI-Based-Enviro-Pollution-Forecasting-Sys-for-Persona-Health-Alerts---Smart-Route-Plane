@@ -1,0 +1,27 @@
+# ==============================================================================
+# AI-Based Environmental Pollution Forecasting System
+# Backend Dependencies
+# ==============================================================================
+
+# ── Web framework ──────────────────────────────────────────────────────────────
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0          # ASGI server with uvloop + httptools
+
+# ── Database ───────────────────────────────────────────────────────────────────
+sqlalchemy>=2.0.36                 # ORM + Core
+alembic>=1.14.0                    # Database migrations
+psycopg2-binary>=2.9.10            # PostgreSQL adapter (synchronous)
+
+# ── Settings & Environment ─────────────────────────────────────────────────────
+pydantic>=2.9.0                    # Data validation
+pydantic-settings>=2.6.0           # BaseSettings with .env support
+python-dotenv>=1.0.1               # .env file loader
+email-validator>=2.2.0             # Required by Pydantic EmailStr
+
+# ── Security (JWT + Password hashing) — wired up in Week 2 ────────────────────
+python-jose[cryptography]>=3.3.0   # JWT encode / decode
+bcrypt>=4.0.0                      # Password hashing (replaces passlib — Python 3.14 compatible)
+
+# ── HTTP / Form handling ───────────────────────────────────────────────────────
+python-multipart>=0.0.12           # Required for FastAPI form / file uploads
+

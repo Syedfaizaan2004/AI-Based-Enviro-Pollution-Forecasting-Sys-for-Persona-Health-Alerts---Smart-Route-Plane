@@ -1,0 +1,324 @@
+/* =============================================================================
+   Global styles — AI Environmental Pollution Forecasting System
+   Tailwind v4: imported via @import directive (no tailwind.config.js needed)
+   ============================================================================= */
+
+/* ── Google Fonts ──────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* ── Custom design tokens ──────────────────────────────────────────────────── */
+@theme {
+  --font-sans: 'Poppins', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Poppins', 'Space Grotesk', sans-serif;
+
+  /* Brand palette - forest green, clean cyan, and sunlit lime */
+  --color-brand-50:  #f1fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+
+  /* Surface palette - deep canopy, river teal, soft moss */
+  --color-surface-950: #030807;
+  --color-surface-900: #07110d;
+  --color-surface-800: #0c1d16;
+  --color-surface-700: #122820;
+  --color-surface-600: #18392e;
+  --color-surface-500: #255044;
+
+  /* Accent — electric amber for AQI warnings */
+  --color-aqi-good:      #15b585;
+  --color-aqi-moderate:  #f59e0b;
+  --color-aqi-sensitive: #f97316;
+  --color-aqi-unhealthy: #ef4444;
+  --color-aqi-hazardous: #7c3aed;
+}
+
+/* ── Base resets ───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans);
+  background:
+    linear-gradient(135deg, #03100b 0%, #08201a 48%, #12170d 100%);
+  color: #e9f8ee;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar styling ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-900);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-700);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-500);
+}
+
+/* ── Utility: glassmorphism card ───────────────────────────────────────────── */
+.glass-card {
+  background: rgba(7, 27, 20, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(187, 247, 208, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+/* ── Utility: gradient text ────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #bbf7d0, #5eead4, #bef264);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Utility: glow button ──────────────────────────────────────────────────── */
+.btn-glow {
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 24px rgba(134, 239, 172, 0.36);
+  transform: translateY(-1px);
+}
+
+/* ── Auth pages — glassmorphism card ───────────────────────────────────────── */
+.glass-auth-card {
+  background: rgba(6, 24, 17, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(187, 247, 208, 0.12);
+  border-radius: 8px;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── Auth form input base ──────────────────────────────────────────────────── */
+.auth-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 15px;
+  background: rgba(242, 252, 244, 0.055);
+  border: 1px solid rgba(187, 247, 208, 0.14);
+  border-radius: 8px;
+  color: #edfdf3;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  caret-color: #86efac;
+}
+.auth-input::placeholder {
+  color: #688679;
+}
+.auth-input:focus {
+  border-color: rgba(134, 239, 172, 0.68);
+  background: rgba(134, 239, 172, 0.075);
+  box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.12);
+}
+.auth-input.error {
+  border-color: rgba(239, 68, 68, 0.55);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+/* ── Auth label ────────────────────────────────────────────────────────────── */
+.auth-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b7d8c4;
+  margin-bottom: 7px;
+  letter-spacing: 0;
+}
+
+/* ── Auth section divider ──────────────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(187, 247, 208, 0.1);
+}
+.auth-divider span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #6f8e80;
+}
+
+/* ── Custom checkbox ───────────────────────────────────────────────────────── */
+.auth-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid rgba(187, 247, 208, 0.2);
+  border-radius: 5px;
+  background: rgba(242, 252, 244, 0.055);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s;
+}
+.auth-checkbox:checked {
+  background: linear-gradient(135deg, #16a34a, #0891b2);
+  border-color: transparent;
+}
+.auth-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+.auth-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.16);
+}
+
+/* ── Primary gradient button ───────────────────────────────────────────────── */
+.auth-btn-primary {
+  width: 100%;
+  min-height: 50px;
+  padding: 14px;
+  background: linear-gradient(135deg, #16a34a 0%, #0891b2 58%, #84cc16 130%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0;
+  position: relative;
+  overflow: hidden;
+}
+.auth-btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.25s;
+}
+.auth-btn-primary:hover:not(:disabled)::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+.auth-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(22, 163, 74, 0.34);
+}
+.auth-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.auth-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Eco product surface helpers ───────────────────────────────────────────── */
+.eco-page-shell {
+  min-height: 100vh;
+  position: relative;
+  background:
+    linear-gradient(135deg, #03100b 0%, #08231c 45%, #14190c 100%);
+  color: #effdf4;
+  font-family: 'Poppins', sans-serif;
+}
+
+.eco-brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(22,163,74,0.95) 0%, rgba(8,145,178,0.95) 62%, rgba(132,204,22,0.9) 135%);
+  border: 1px solid rgba(220, 252, 231, 0.22);
+  box-shadow: 0 12px 30px rgba(22, 163, 74, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eco-panel {
+  background:
+    linear-gradient(145deg, rgba(7, 31, 22, 0.84), rgba(6, 24, 31, 0.76));
+  border: 1px solid rgba(187, 247, 208, 0.14);
+  border-radius: 8px;
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.eco-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(134, 239, 172, 0.075);
+  border: 1px solid rgba(134, 239, 172, 0.16);
+  color: #bbf7d0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.eco-muted {
+  color: #83a694;
+}
+
+@media (max-width: 720px) {
+  .auth-input,
+  .auth-btn-primary {
+    min-height: 46px;
+  }
+
+  .eco-brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+}
