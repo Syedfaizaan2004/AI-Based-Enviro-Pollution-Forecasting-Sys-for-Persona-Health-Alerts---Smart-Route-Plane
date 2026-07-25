@@ -1,260 +1,52 @@
-# AI-Based Environmental Pollution Forecasting System
-# Stack: FastAPI, PostgreSQL, SQLAlchemy, Alembic, React, Vite, Jupyter, ML models
-
-# ---------------------------------------------------------------------------
-# Operating system files
-# ---------------------------------------------------------------------------
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100/
-.Trashes/
-Thumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.lnk
-
-# ---------------------------------------------------------------------------
-# Secrets and local environment
-# ---------------------------------------------------------------------------
-.env
-.env.*
-!.env.example
-!.env.sample
-.envrc
-
-*.pem
-*.key
-*.crt
-*.cer
-*.p12
-*.pfx
-secrets/
-credentials/
-
-# ---------------------------------------------------------------------------
-# Python backend
-# ---------------------------------------------------------------------------
-.venv/
-venv/
-env/
-ENV/
-.conda/
-.mamba/
-envs/
-__pypackages__/
-.python-version
-
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-*.dylib
 .Python
-
 build/
+develop-eggs/
 dist/
-*.egg-info/
+downloads/
+eggs/
 .eggs/
-pip-wheel-metadata/
-wheelhouse/
-
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.DS_Store
+*.sqlite3
+*.db
 .pytest_cache/
-.mypy_cache/
-.pyre/
-.ruff_cache/
+.coverage
+htmlcov/
 .tox/
 .nox/
-.cache/
-.coverage
-.coverage.*
-coverage.xml
-htmlcov/
-test-results/
-junit.xml
-
-*.pid
-
-# Alembic migrations should be committed. Only ignore bytecode/backups.
-backend/alembic/versions/*.pyc
-backend/alembic/versions/*.bak
-
-# ---------------------------------------------------------------------------
-# PostgreSQL and local databases
-# ---------------------------------------------------------------------------
-*.db
-*.sqlite
-*.sqlite3
-*.sql.bak
-pgdata/
-postgres-data/
-
-# ---------------------------------------------------------------------------
-# Jupyter notebooks
-# ---------------------------------------------------------------------------
-.ipynb_checkpoints/
-*/.ipynb_checkpoints/
-**/.ipynb_checkpoints/
-.jupyter/
-.ipython/
-*.nbconvert.ipynb
-profile_default/
-ipython_config.py
-
-# ---------------------------------------------------------------------------
-# Machine learning outputs
-# ---------------------------------------------------------------------------
-catboost_info/
-Notebook/catboost_info/
-backend/catboost_info/
-
-mlruns/
-wandb/
-lightning_logs/
-tensorboard/
-runs/
-checkpoints/
-artifacts/
-outputs/
-
-*.cbm
-*.ckpt
-*.joblib
-*.pkl
-*.pickle
-*.sav
-*.pt
-*.pth
-*.h5
-*.hdf5
-*.keras
-*.onnx
-*.npy
-*.npz
-*.parquet
-*.feather
-events.out.tfevents.*
-
-# Required backend inference bundle.
-!backend/app/models/
-!backend/app/models/catboost_model.cbm
-!backend/app/models/lightgbm_model.pkl
-!backend/app/models/xgboost_model.json
-!backend/app/models/robust_scaler.pkl
-!backend/app/models/selected_features.pkl
-!backend/app/models/ensemble_info.pkl
-
-# Current notebook result files kept in the repository.
-!models/
-!models/best_tree_model.txt
-!models/tree_model_results.csv
-!models/tree_predictions.csv
-
-# ---------------------------------------------------------------------------
-# Datasets and generated reports
-# ---------------------------------------------------------------------------
-/Data/**
-!/Data/
-!/Data/**/
-!/Data/**/.gitkeep
-!/Data/**/README*
-
-/data/**
-!/data/
-!/data/**/
-!/data/**/.gitkeep
-!/data/**/README*
-
-/Reports/**
-!/Reports/
-!/Reports/**/
-!/Reports/**/.gitkeep
-!/Reports/**/README*
-
-/reports/**
-!/reports/
-!/reports/**/
-!/reports/**/.gitkeep
-!/reports/**/README*
-
-# ---------------------------------------------------------------------------
-# React/Vite frontend
-# ---------------------------------------------------------------------------
+.mypy_cache/
+.ruff_cache/
+.vscode/
+.idea/
 node_modules/
-frontend/node_modules/
-
-.npm/
-.pnpm-store/
-.yarn/
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-frontend/dist/
-frontend/dist-ssr/
-frontend/.vite/
-dist/
-dist-ssr/
-.vite/
-
 .next/
-.nuxt/
-.svelte-kit/
-.output/
-.vercel/
-.netlify/
-storybook-static/
-
-frontend/.env
-frontend/.env.*
-!frontend/.env.example
-
-# ---------------------------------------------------------------------------
-# Logs, temp files, and archives
-# ---------------------------------------------------------------------------
-*.log
-*.out
-*.err
-logs/
-tmp/
-temp/
-.tmp/
-*.tmp
-*.bak
-*.swp
-*.swo
-*~
-*.orig
-
-*.zip
-*.tar
-*.tar.gz
-*.tgz
-*.tar.bz2
-*.rar
-*.7z
-*.gz
-
-# ---------------------------------------------------------------------------
-# Editors and local tooling
-# ---------------------------------------------------------------------------
-.vscode/
-.idea/
-*.iml
-*.iws
-*.ipr
-*.code-workspace
 out/
-
-.netrwhist
-\#*\#
-.\#*
-auto-save-list/
-
-.docker/
-docker-compose.override.yml
-
-.gemini/
+models/
+Notebook/.ipynb_checkpoints
+*.pkl
+*.h5
+*.cbm

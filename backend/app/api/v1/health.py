@@ -1,40 +1,28 @@
-"""
-Health check router — GET /api/v1/health
+from fastapi import APIRouter, status
+from fastapi.responses import JSONResponse
+from app.services.health_service import HealthService
 
-Returns a simple JSON payload confirming the API is running.
-Optionally includes a database connectivity check so ops tooling
-can distinguish between an API-only outage and a DB outage.
-"""
+router = APIRouter(prefix="/health", tags=["System Health"])
 
-from fastapi import APIRouter
-from pydantic import BaseModel
+@router.get("/live")
+async def liveness_probe():
+    """Kubernetes Liveness Probe - Fast, no dependencies."""
+    return {"status": "alive"}
 
-router = APIRouter(tags=["Health"])
+@router.get("/ready")
+async def readiness_probe():
+    """Kubernetes Readiness Probe - Checks deep dependencies."""
+    health_data = await HealthService.get_system_health()
+    if health_data["status"] != "ready":
+        return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=health_data)
+    return health_data
 
+@router.get("/details")
+async def detailed_health():
+    """Detailed JSON payload of latencies and stats for Monitoring tools."""
+    return await HealthService.get_system_health()
 
-# ------------------------------------------------------------------ #
-# Response schema
-# ------------------------------------------------------------------ #
-class HealthResponse(BaseModel):
-    """Schema for the health-check response."""
-
-    status: str
-
-    model_config = {"json_schema_extra": {"example": {"status": "running"}}}
-
-
-# ------------------------------------------------------------------ #
-# Route
-# ------------------------------------------------------------------ #
-@router.get(
-    "/health",
-    response_model=HealthResponse,
-    summary="Health Check",
-    description=(
-        "Lightweight liveness probe. "
-        "Returns `{'status': 'running'}` when the API is up."
-    ),
-)
-def health_check() -> HealthResponse:
-    """Return API liveness status."""
-    return HealthResponse(status="running")
+@router.get("")
+async def basic_health():
+    """Standard health endpoint."""
+    return {"status": "ok"}

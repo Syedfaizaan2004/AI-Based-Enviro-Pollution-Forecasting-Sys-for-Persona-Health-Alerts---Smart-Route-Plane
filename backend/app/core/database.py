@@ -1,70 +1,37 @@
-"""
-SQLAlchemy database engine and session management.
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.orm import declarative_base
+from app.core.config import settings
 
-Pattern:
-  - Engine is created once using the DATABASE_URL from Settings.
-  - SessionLocal is a session factory used via the `get_db` dependency.
-  - `get_db` is an async-generator dependency injected into route handlers.
-"""
+# SQLite does not support standard connection pooling arguments
+is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 
-from collections.abc import Generator
+engine_kwargs = {
+    "echo": settings.DEBUG,
+}
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import Session, sessionmaker
+if not is_sqlite:
+    engine_kwargs.update({
+        "pool_size": 20,
+        "max_overflow": 10,
+        "pool_pre_ping": True,
+        "pool_recycle": 3600,
+        "connect_args": {"command_timeout": 60}
+    })
 
-from app.core.config import get_settings
-
-settings = get_settings()
-
-# ------------------------------------------------------------------ #
-# Engine — synchronous (psycopg2)
-# ------------------------------------------------------------------ #
-engine = create_engine(
+engine = create_async_engine(
     settings.DATABASE_URL,
-    # Keep a small pool; scale up in production via env vars.
-    pool_pre_ping=True,       # Recycle stale connections automatically.
-    pool_size=5,
-    max_overflow=10,
-    echo=False,               # Set True locally to log SQL for debugging.
+    **engine_kwargs
 )
 
-# ------------------------------------------------------------------ #
-# Session factory
-# ------------------------------------------------------------------ #
-SessionLocal = sessionmaker(
-    bind=engine,
-    autocommit=False,
-    autoflush=False,
-    expire_on_commit=False,   # Prevent lazy-loading errors after commit.
+AsyncSessionLocal = async_sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False, autoflush=False
 )
 
+Base = declarative_base()
 
-# ------------------------------------------------------------------ #
-# FastAPI dependency
-# ------------------------------------------------------------------ #
-def get_db() -> Generator[Session, None, None]:
-    """
-    Yield a SQLAlchemy Session for the duration of a single request.
-
-    Usage in route handlers:
-        db: Session = Depends(get_db)
-    """
-    db: Session = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-def check_db_connection() -> bool:
-    """
-    Perform a lightweight liveness check against the database.
-    Returns True if the database is reachable, False otherwise.
-    Called during application startup.
-    """
-    try:
-        with engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-        return True
-    except Exception:
-        return False
+async def get_db() -> AsyncSession:
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()

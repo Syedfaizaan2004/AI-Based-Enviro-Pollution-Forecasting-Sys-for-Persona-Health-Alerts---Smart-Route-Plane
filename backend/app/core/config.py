@@ -1,66 +1,48 @@
-"""
-Application configuration.
-
-Reads environment variables from the project-root .env file using
-Pydantic BaseSettings so every setting has a type, a default, and
-is validated at startup rather than failing silently at runtime.
-"""
-
-from functools import lru_cache
-from pathlib import Path
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-# Resolve the .env path relative to this file so the config works correctly
-# regardless of which directory the process is launched from
-# (uvicorn from backend/, alembic from backend/, pytest, etc.).
-# __file__ = backend/app/core/config.py  → parent×3 = project root
-_ENV_FILE = Path(__file__).resolve().parent.parent.parent.parent / ".env"
-
+from pydantic import field_validator
+from typing import Any, Optional
 
 class Settings(BaseSettings):
-    """Centralised application settings loaded from environment variables."""
+    PROJECT_NAME: str = "AI-Based Environmental Pollution Forecasting System"
+    API_VERSION: str = "v1"
+    DEBUG: bool = False
+    LOG_LEVEL: str = "INFO"
 
-    # ------------------------------------------------------------------ #
-    # Database
-    # ------------------------------------------------------------------ #
     DATABASE_URL: str
+    REDIS_URL: str = "redis://localhost:6379/0"
 
-    # ------------------------------------------------------------------ #
-    # JWT / Security  (not used in Week 1 but loaded so .env is complete)
-    # ------------------------------------------------------------------ #
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    # ------------------------------------------------------------------ #
-    # Application meta
-    # ------------------------------------------------------------------ #
-    APP_TITLE: str = "AI Environmental Pollution Forecasting API"
-    APP_VERSION: str = "0.1.0"
-    APP_DESCRIPTION: str = (
-        "REST API for AI-Based Environmental Pollution Forecasting, "
-        "Personal Health Alerts and Smart Route Planning."
-    )
+    GOOGLE_MAPS_API_KEY: Optional[str] = None
+    OPENWEATHER_API_KEY: Optional[str] = None
+    WAQI_API_KEY: Optional[str] = None
+    GEOAPIFY_API_KEY: Optional[str] = None
+    SARVAM_AI_KEY: Optional[str] = None
 
-    # ------------------------------------------------------------------ #
-    # CORS — comma-separated list of allowed origins
-    # ------------------------------------------------------------------ #
-    ALLOWED_ORIGINS: list[str] = [
-        "http://localhost:5173",   # Vite dev server
-        "http://localhost:3000",
-    ]
+    model_config = SettingsConfigDict(env_file=(".env", "../.env"), env_file_encoding="utf-8", extra="ignore")
 
-    model_config = SettingsConfigDict(
-        # Absolute path — works from any working directory.
-        env_file=_ENV_FILE,
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="ignore",
-    )
+    @field_validator("DEBUG", mode="before")
+    @classmethod
+    def parse_debug(cls, v: Any) -> Any:
+        if isinstance(v, bool) or v is None:
+            return v
 
+        if isinstance(v, str):
+            normalized = v.strip().lower()
+            if normalized in {"1", "true", "t", "yes", "y", "on", "debug", "development", "dev"}:
+                return True
+            if normalized in {"0", "false", "f", "no", "n", "off", "release", "production", "prod"}:
+                return False
 
-@lru_cache(maxsize=1)
-def get_settings() -> Settings:
-    """Return a cached Settings instance (loaded once at startup)."""
-    return Settings()
+        return v
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_db_url(cls, v: str) -> str:
+        if v and v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
+
+settings = Settings()

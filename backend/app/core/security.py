@@ -1,110 +1,31 @@
-"""
-Security utilities — password hashing and JWT token management.
-
-Libraries:
-  - bcrypt          — direct bcrypt hashing, fully Python 3.14 compatible.
-                      (passlib is unmaintained and breaks on Python 3.14 + bcrypt 4.x)
-  - python-jose     — JWT encode / decode (HS256).
-"""
-
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Any, Union
+from jose import jwt
+from passlib.context import CryptContext
+from app.core.config import settings
 
-import bcrypt
-from fastapi import HTTPException, status
-from jose import JWTError, jwt
-
-from app.core.config import get_settings
-from app.schemas.user import TokenPayload
-
-settings = get_settings()
-
-
-# ========================================================================== #
-# Password helpers
-# ========================================================================== #
-
-def hash_password(plain_password: str) -> str:
-    """
-    Return a bcrypt hash of `plain_password`.
-
-    The password is encoded to UTF-8 bytes, hashed with a random salt,
-    and the result is returned as a UTF-8 string for database storage.
-    """
-    hashed_bytes = bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt())
-    return hashed_bytes.decode("utf-8")
-
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    Verify that `plain_password` matches `hashed_password`.
+    return pwd_context.verify(plain_password, hashed_password)
 
-    Returns True on match, False otherwise.
-    Uses bcrypt.checkpw which is constant-time and safe against timing attacks.
-    """
-    return bcrypt.checkpw(
-        plain_password.encode("utf-8"),
-        hashed_password.encode("utf-8"),
-    )
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
 
+def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
+    now = datetime.now(timezone.utc)
+    if expires_delta:
+        expire = now + expires_delta
+    else:
+        expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    to_encode = {"exp": expire, "iat": now, "sub": str(subject), "type": "access"}
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
 
-# ========================================================================== #
-# JWT helpers
-# ========================================================================== #
-
-def create_access_token(
-    subject: str,
-    expires_delta: Optional[timedelta] = None,
-) -> str:
-    """
-    Encode a JWT access token.
-
-    Args:
-        subject:       The value to store in the `sub` claim (user UUID as str).
-        expires_delta: Optional custom expiry. Falls back to
-                       Settings.ACCESS_TOKEN_EXPIRE_MINUTES.
-
-    Returns:
-        A signed JWT string.
-    """
-    if expires_delta is None:
-        expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-
-    expire = datetime.now(timezone.utc) + expires_delta
-
-    payload = {
-        "sub": subject,
-        "exp": expire,
-        "iat": datetime.now(timezone.utc),
-    }
-
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-
-
-def decode_access_token(token: str) -> TokenPayload:
-    """
-    Decode and validate a JWT access token.
-
-    Raises:
-        HTTPException 401 — if the token is invalid, expired, or missing `sub`.
-    """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials.",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    try:
-        payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM],
-        )
-        sub: Optional[str] = payload.get("sub")
-        if sub is None:
-            raise credentials_exception
-
-        return TokenPayload(sub=sub, exp=payload.get("exp"))
-
-    except JWTError:
-        raise credentials_exception
+def create_refresh_token(subject: Union[str, Any]) -> str:
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(days=7) # Refresh token valid for 7 days
+    to_encode = {"exp": expire, "iat": now, "sub": str(subject), "type": "refresh"}
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
