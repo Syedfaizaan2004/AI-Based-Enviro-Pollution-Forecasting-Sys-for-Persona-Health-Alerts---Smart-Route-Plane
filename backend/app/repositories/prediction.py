@@ -1,4 +1,5 @@
 import logging
+import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.prediction import PredictionHistory
@@ -22,7 +23,7 @@ class PredictionRepository:
             logger.error(f"Failed to save prediction: {str(e)}")
             raise e
 
-    async def get_prediction(self, prediction_id: int) -> Optional[PredictionHistory]:
+    async def get_prediction(self, prediction_id: uuid.UUID) -> Optional[PredictionHistory]:
         stmt = select(PredictionHistory).where(PredictionHistory.id == prediction_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
@@ -32,9 +33,9 @@ class PredictionRepository:
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_history(self, skip: int = 0, limit: int = 20, sort_by: str = "prediction_timestamp", sort_desc: bool = True, filters: dict = None) -> tuple[List[PredictionHistory], int]:
+    async def get_history(self, user_id: uuid.UUID, skip: int = 0, limit: int = 20, sort_by: str = "prediction_timestamp", sort_desc: bool = True, filters: dict = None) -> tuple[List[PredictionHistory], int]:
         from sqlalchemy import func
-        stmt = select(PredictionHistory)
+        stmt = select(PredictionHistory).where(PredictionHistory.user_id == user_id)
         
         # Filtering
         if filters:
@@ -73,7 +74,7 @@ class PredictionRepository:
         # Future phases may implement this via a join on HealthAdvisoryLog or RouteWaypoint.
         return []
 
-    async def delete_prediction(self, prediction_id: int) -> bool:
+    async def delete_prediction(self, prediction_id: uuid.UUID) -> bool:
         pred = await self.get_prediction(prediction_id)
         if not pred:
             return False
@@ -84,4 +85,16 @@ class PredictionRepository:
         except Exception as e:
             await self.db.rollback()
             logger.error(f"Failed to delete prediction {prediction_id}: {str(e)}")
+            raise e
+
+    async def delete_all_predictions(self, user_id: uuid.UUID) -> int:
+        from sqlalchemy import delete
+        stmt = delete(PredictionHistory).where(PredictionHistory.user_id == user_id)
+        try:
+            result = await self.db.execute(stmt)
+            await self.db.commit()
+            return result.rowcount
+        except Exception as e:
+            await self.db.rollback()
+            logger.error(f"Failed to delete all predictions: {str(e)}")
             raise e

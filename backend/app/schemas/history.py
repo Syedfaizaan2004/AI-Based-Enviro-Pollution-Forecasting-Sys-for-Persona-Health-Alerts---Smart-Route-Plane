@@ -35,14 +35,22 @@ class ExposureStatistics(BaseModel):
     safest_route_id: Optional[uuid.UUID] = None
 
 class PredictionHistoryResponse(BaseModel):
-    id: int
+    id: uuid.UUID
     latitude: float
     longitude: float
+    city: Optional[str] = None
     aqi_value: float
     aqi_category: str
     pm25: float
     pm10: float
+    no2: float
+    so2: float
+    o3: float
+    co: float
     temperature: float
     humidity: float
+    wind_speed: float
+    pressure: float
     prediction_timestamp: datetime
     prediction_source: str
+    created_at: datetime

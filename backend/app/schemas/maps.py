@@ -12,6 +12,15 @@ class GeocodeResponse(BaseModel):
 class ReverseGeocodeResponse(BaseModel):
     address: str
 
+class AutocompleteSuggestion(BaseModel):
+    formatted: str
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+
+class AutocompleteResponse(BaseModel):
+    suggestions: List[AutocompleteSuggestion]
+
 class RouteWaypoint(BaseModel):
     lat: float
     lng: float

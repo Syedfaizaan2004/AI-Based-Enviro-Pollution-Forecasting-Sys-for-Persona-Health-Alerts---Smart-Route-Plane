@@ -26,3 +26,16 @@ class SarvamClient(BaseClient):
         # Assuming BaseClient.post supports headers kwarg
         response = await self.post(endpoint, json=payload, headers=self.headers)
         return response.json()
+
+    async def translate_batch(self, texts: list[str], target_lang: str, source_lang: str = "en-IN") -> dict:
+        endpoint = "translate"
+        payload = {
+            "input": texts,
+            "source_language_code": source_lang,
+            "target_language_code": target_lang,
+            "speaker_gender": "Male",
+            "mode": "formal",
+            "model": "sarvam-translate"
+        }
+        response = await self.post(endpoint, json=payload, headers=self.headers)
+        return response.json()

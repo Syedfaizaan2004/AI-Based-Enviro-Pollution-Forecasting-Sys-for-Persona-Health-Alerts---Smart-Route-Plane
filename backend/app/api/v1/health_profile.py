@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.schemas.health_profile import HealthProfileRead, HealthProfileUpdate
 from app.models.user import User
-from app.api.dependencies.auth import get_current_user
+from app.api.deps import get_current_user
 from app.services.health_profile_service import HealthProfileService
 
 router = APIRouter(prefix="/health-profile", tags=["Health Profile"])
@@ -22,6 +22,7 @@ async def patch_health_profile(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
+    """Partial update of health profile fields."""
     service = HealthProfileService()
     return await service.update_profile(db, current_user.id, profile_in)
 
@@ -31,5 +32,6 @@ async def put_health_profile(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
+    """Full replacement of health profile."""
     service = HealthProfileService()
     return await service.update_profile(db, current_user.id, profile_in)

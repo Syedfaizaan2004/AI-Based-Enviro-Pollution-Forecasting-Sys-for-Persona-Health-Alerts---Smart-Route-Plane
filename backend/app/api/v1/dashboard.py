@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db, get_current_user
-from app.schemas.dashboard import (DashboardSummaryResponse, DashboardCards, ExposureAnalytics, PredictionAnalytics, RouteAnalytics, HealthAnalytics, TrendDataPoint, ChartDataResponse, FavoriteRouteResponse)
+from app.schemas.dashboard import (DashboardSummaryResponse, TrendDataPoint, ChartDataResponse)
 from app.services.dashboard_service import DashboardService, TrendService, ChartService
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -18,50 +18,6 @@ async def get_dashboard_summary(
     service = DashboardService(db)
     return await service.get_summary(current_user.id)
 
-@router.get("/cards", response_model=DashboardCards)
-async def get_dashboard_cards(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = DashboardService(db)
-    summary = await service.get_summary(current_user.id)
-    return summary.cards
-
-@router.get("/predictions", response_model=PredictionAnalytics)
-async def get_dashboard_predictions(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = DashboardService(db)
-    summary = await service.get_summary(current_user.id)
-    return summary.predictions
-
-@router.get("/routes", response_model=RouteAnalytics)
-async def get_dashboard_routes(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = DashboardService(db)
-    summary = await service.get_summary(current_user.id)
-    return summary.routes
-
-@router.get("/exposure", response_model=ExposureAnalytics)
-async def get_dashboard_exposure(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = DashboardService(db)
-    summary = await service.get_summary(current_user.id)
-    return summary.exposure
-
-@router.get("/health", response_model=HealthAnalytics)
-async def get_dashboard_health(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = DashboardService(db)
-    summary = await service.get_summary(current_user.id)
-    return summary.health
 
 @router.get("/recent-activity")
 async def get_recent_activity(
@@ -71,13 +27,6 @@ async def get_recent_activity(
     service = DashboardService(db)
     return await service.get_recent_activity(current_user.id)
 
-@router.get("/favorites", response_model=List[FavoriteRouteResponse])
-async def get_favorite_routes(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = DashboardService(db)
-    return await service.get_favorite_routes(current_user.id)
 
 @router.get("/trends", response_model=List[TrendDataPoint])
 async def get_trends(

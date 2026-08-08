@@ -11,6 +11,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8)
+    region: Optional[str] = None
 
     @field_validator("password")
     @classmethod
@@ -27,6 +28,7 @@ class UserCreate(UserBase):
 
 class UserUpdate(BaseModel):
     username: Optional[str] = Field(None, min_length=3, max_length=50)
+    region: Optional[str] = None
     # Add other fields as needed (Preferred language, full name, etc.)
 
 class PasswordChange(BaseModel):
@@ -51,6 +53,7 @@ class UserRead(UserBase):
     role: UserRole
     is_active: bool
     is_verified: bool
+    region: Optional[str] = None
     created_at: datetime
     
     model_config = {"from_attributes": True}

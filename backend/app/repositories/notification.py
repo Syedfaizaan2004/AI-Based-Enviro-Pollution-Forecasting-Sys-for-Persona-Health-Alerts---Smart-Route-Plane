@@ -34,13 +34,13 @@ class NotificationRepository:
         res = await self.db.execute(stmt)
         return res.scalars().all()
 
-    async def get_notification(self, notif_id: uuid.UUID) -> Optional[Notification]:
-        stmt = select(Notification).where(Notification.id == notif_id)
+    async def get_notification(self, notif_id: uuid.UUID, user_id: uuid.UUID) -> Optional[Notification]:
+        stmt = select(Notification).where(Notification.id == notif_id, Notification.user_id == user_id)
         res = await self.db.execute(stmt)
         return res.scalar_one_or_none()
 
-    async def mark_as_read(self, notif_id: uuid.UUID) -> Optional[Notification]:
-        stmt = update(Notification).where(Notification.id == notif_id).values(is_read=True).returning(Notification)
+    async def mark_as_read(self, notif_id: uuid.UUID, user_id: uuid.UUID) -> Optional[Notification]:
+        stmt = update(Notification).where(Notification.id == notif_id, Notification.user_id == user_id).values(is_read=True).returning(Notification)
         res = await self.db.execute(stmt)
         await self.db.commit()
         return res.scalar_one_or_none()
@@ -50,8 +50,8 @@ class NotificationRepository:
         await self.db.execute(stmt)
         await self.db.commit()
 
-    async def delete_notification(self, notif_id: uuid.UUID) -> bool:
-        stmt = delete(Notification).where(Notification.id == notif_id).returning(Notification.id)
+    async def delete_notification(self, notif_id: uuid.UUID, user_id: uuid.UUID) -> bool:
+        stmt = delete(Notification).where(Notification.id == notif_id, Notification.user_id == user_id).returning(Notification.id)
         res = await self.db.execute(stmt)
         await self.db.commit()
         return res.scalar_one_or_none() is not None

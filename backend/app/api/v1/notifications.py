@@ -44,8 +44,8 @@ async def get_notification(
     current_user: dict = Depends(get_current_user)
 ):
     service = NotificationService(db)
-    notif = await service.get_notification(id)
-    if not notif: # Assuming security logic checks ownership if implemented
+    notif = await service.get_notification(id, current_user.id)
+    if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
     return notif
 
@@ -56,7 +56,7 @@ async def mark_as_read(
     current_user: dict = Depends(get_current_user)
 ):
     service = NotificationService(db)
-    notif = await service.mark_as_read(id)
+    notif = await service.mark_as_read(id, current_user.id)
     if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
     return notif
@@ -68,7 +68,7 @@ async def delete_notification(
     current_user: dict = Depends(get_current_user)
 ):
     service = NotificationService(db)
-    success = await service.delete_notification(id)
+    success = await service.delete_notification(id, current_user.id)
     if not success:
         raise HTTPException(status_code=404, detail="Notification not found")
     return None

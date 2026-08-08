@@ -9,6 +9,8 @@ class PredictionRequest(BaseModel):
     prediction_time: datetime
     city: Optional[str] = None
     health_condition: Optional[HealthCondition] = None
+    skip_history: bool = False
+    user_id: Optional[str] = None
 
 class PredictionResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -28,6 +30,10 @@ class PredictionResponse(BaseModel):
     health_risk_level: str
     pm25: float = 0.0
     pm10: float = 0.0
+    no2: float = 0.0
+    so2: float = 0.0
+    o3: float = 0.0
+    co: float = 0.0
     temperature: float = 0.0
     humidity: float = 0.0
     wind_speed: float = 0.0

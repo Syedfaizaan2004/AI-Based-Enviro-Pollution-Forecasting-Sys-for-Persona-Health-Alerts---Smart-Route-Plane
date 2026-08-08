@@ -1,7 +1,7 @@
 import logging
 from fastapi import HTTPException
 from app.api_clients.geoapify_client import GeoapifyClient
-from app.schemas.maps import GeocodeResponse, ReverseGeocodeResponse
+from app.schemas.maps import GeocodeResponse, ReverseGeocodeResponse, AutocompleteResponse, AutocompleteSuggestion
 from app.services.cache_service import CacheManager
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,34 @@ class GeocodingService:
         resp = GeocodeResponse(address=formatted, location={"lat": lat, "lng": lng})
 
         await CacheManager.set(cache_key, resp.model_dump(), ttl_seconds=86400)
+        return resp
+
+    async def autocomplete(self, text: str) -> AutocompleteResponse:
+        cache_key = f"autocomplete:{text.lower()}"
+        cached = await CacheManager.get(cache_key)
+        if cached:
+            return AutocompleteResponse(**cached)
+
+        try:
+            data = await self.client.autocomplete(text)
+        except Exception as e:
+            logger.error(f"Autocomplete API error: {str(e)}")
+            raise HTTPException(status_code=502, detail="Autocomplete provider unavailable")
+
+        suggestions = []
+        for feature in data.get("features", []):
+            props = feature.get("properties", {})
+            suggestions.append(
+                AutocompleteSuggestion(
+                    formatted=props.get("formatted", ""),
+                    city=props.get("city"),
+                    state=props.get("state"),
+                    country=props.get("country")
+                )
+            )
+
+        resp = AutocompleteResponse(suggestions=suggestions)
+        await CacheManager.set(cache_key, resp.model_dump(), ttl_seconds=3600)
         return resp
 
     async def reverse_geocode(self, lat: float, lng: float) -> ReverseGeocodeResponse:

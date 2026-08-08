@@ -54,11 +54,36 @@ class MapsService:
     async def get_distance_matrix(self, origins: str, destinations: str) -> DistanceMatrixResponse:
         try:
             geo_svc = GeocodingService()
-            origin_geo = await geo_svc.geocode(origins.split("|")[0])
-            dest_geo = await geo_svc.geocode(destinations.split("|")[0])
             
-            sources = [{"location": [origin_geo.location.lng, origin_geo.location.lat]}]
-            targets = [{"location": [dest_geo.location.lng, dest_geo.location.lat]}]
+            def parse_location(loc_str: str):
+                parts = loc_str.split(",")
+                if len(parts) == 2:
+                    try:
+                        lat, lng = float(parts[0].strip()), float(parts[1].strip())
+                        return lat, lng
+                    except ValueError:
+                        pass
+                return None
+                
+            orig = origins.split("|")[0]
+            dest = destinations.split("|")[0]
+            
+            orig_coords = parse_location(orig)
+            if orig_coords:
+                o_lat, o_lng = orig_coords
+            else:
+                origin_geo = await geo_svc.geocode(orig)
+                o_lat, o_lng = origin_geo.location.lat, origin_geo.location.lng
+                
+            dest_coords = parse_location(dest)
+            if dest_coords:
+                d_lat, d_lng = dest_coords
+            else:
+                dest_geo = await geo_svc.geocode(dest)
+                d_lat, d_lng = dest_geo.location.lat, dest_geo.location.lng
+            
+            sources = [{"location": [o_lng, o_lat]}]
+            targets = [{"location": [d_lng, d_lat]}]
             
             data = await self.geoapify_client.routing_matrix(sources, targets)
         except Exception as e:

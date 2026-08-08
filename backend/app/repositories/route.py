@@ -35,8 +35,10 @@ class RouteRepository:
             user_id=user_id,
             start_lat=route_data.waypoints[0].latitude if route_data.waypoints else 0.0,
             start_lng=route_data.waypoints[0].longitude if route_data.waypoints else 0.0,
+            start_address=route_data.start_address,
             end_lat=route_data.waypoints[-1].latitude if route_data.waypoints else 0.0,
             end_lng=route_data.waypoints[-1].longitude if route_data.waypoints else 0.0,
+            end_address=route_data.end_address,
             total_distance_km=route_data.distance_km,
             estimated_duration_min=route_data.travel_time_min,
             status=RouteStatus.COMPLETED
@@ -64,7 +66,12 @@ class RouteRepository:
             wp = RouteWaypoint(
                 sequence_order=i,
                 latitude=wp_data.latitude,
-                longitude=wp_data.longitude
+                longitude=wp_data.longitude,
+                predicted_aqi=wp_data.predicted_aqi,
+                aqi_category=wp_data.aqi_category,
+                city_name=wp_data.city_name,
+                temperature=wp_data.temperature,
+                pm25=wp_data.pm25
             )
             waypoints.append(wp)
             
@@ -99,7 +106,10 @@ class RouteRepository:
             .where(RouteHistory.user_id == user_id)
             .order_by(RouteHistory.created_at.desc())
             .limit(limit)
-            .options(selectinload(RouteHistory.scores))
+            .options(
+                selectinload(RouteHistory.scores),
+                selectinload(RouteHistory.waypoints)
+            )
         )
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
@@ -115,6 +125,18 @@ class RouteRepository:
         except Exception as e:
             await self.db.rollback()
             logger.error(f"Failed to delete route: {str(e)}")
+            raise e
+
+    async def delete_all_user_routes(self, user_id: uuid.UUID) -> bool:
+        from sqlalchemy import delete
+        try:
+            stmt = delete(RouteHistory).where(RouteHistory.user_id == user_id)
+            await self.db.execute(stmt)
+            await self.db.commit()
+            return True
+        except Exception as e:
+            await self.db.rollback()
+            logger.error(f"Failed to delete all routes for user {user_id}: {str(e)}")
             raise e
 
     async def get_history(self, user_id: uuid.UUID, skip: int = 0, limit: int = 20, sort_by: str = "created_at", sort_desc: bool = True, filters: dict = None) -> tuple[List[RouteHistory], int]:
@@ -136,7 +158,10 @@ class RouteRepository:
         else:
             stmt = stmt.order_by(order_col.asc())
             
-        stmt = stmt.offset(skip).limit(limit).options(selectinload(RouteHistory.scores))
+        stmt = stmt.offset(skip).limit(limit).options(
+            selectinload(RouteHistory.scores),
+            selectinload(RouteHistory.waypoints)
+        )
         result = await self.db.execute(stmt)
         return list(result.scalars().all()), total_count or 0
 

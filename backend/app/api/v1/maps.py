@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
-from app.schemas.maps import GeocodeResponse, ReverseGeocodeResponse, DirectionsResponse, DistanceMatrixResponse
+from app.schemas.maps import GeocodeResponse, ReverseGeocodeResponse, DirectionsResponse, DistanceMatrixResponse, AutocompleteResponse
 from app.services.maps_service import MapsService
 from app.services.geocoding_service import GeocodingService
 
@@ -8,6 +8,9 @@ router = APIRouter(prefix="/maps", tags=["Maps"])
 
 class GeocodeRequest(BaseModel):
     address: str
+
+class AutocompleteRequest(BaseModel):
+    text: str
 
 class ReverseGeocodeRequest(BaseModel):
     latitude: float = Field(..., ge=-90, le=90)
@@ -24,6 +27,10 @@ class DistanceMatrixRequest(BaseModel):
 @router.post("/geocode", response_model=GeocodeResponse)
 async def geocode(req: GeocodeRequest):
     return await GeocodingService().geocode(req.address)
+
+@router.post("/autocomplete", response_model=AutocompleteResponse)
+async def autocomplete(req: AutocompleteRequest):
+    return await GeocodingService().autocomplete(req.text)
 
 @router.post("/reverse-geocode", response_model=ReverseGeocodeResponse)
 async def reverse_geocode(req: ReverseGeocodeRequest):

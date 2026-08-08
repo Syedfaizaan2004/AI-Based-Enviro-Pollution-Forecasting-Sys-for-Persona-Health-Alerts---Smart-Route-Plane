@@ -27,7 +27,8 @@ class AuthService:
         user = await self.user_repo.create(db, obj_in={
             "email": user_in.email,
             "username": user_in.username,
-            "hashed_password": hashed_password
+            "hashed_password": hashed_password,
+            "region": user_in.region
         })
 
         # Create default health profile

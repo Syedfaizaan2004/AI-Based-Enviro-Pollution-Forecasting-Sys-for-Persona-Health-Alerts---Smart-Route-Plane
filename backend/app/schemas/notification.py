@@ -10,7 +10,7 @@ class NotificationBase(BaseModel):
     notification_type: NotificationType
     
 class NotificationCreate(NotificationBase):
-    pass
+    target_regions: Optional[List[str]] = None
 
 class NotificationResponse(NotificationBase):
     id: uuid.UUID

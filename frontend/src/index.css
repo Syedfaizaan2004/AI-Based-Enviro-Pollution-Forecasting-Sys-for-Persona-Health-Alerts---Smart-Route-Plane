@@ -1,0 +1,262 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════
+   AIRGUARD — 4-Color Environmental Design System
+   
+   4 Colors of Nature (always visible on dark background):
+   🌿 Emerald   #059669  — forests, clean air
+   🌊 Cyan      #0891b2  — sky, water, atmosphere
+   🌙 Deep Navy #0a1628  — night sky, depth, trust
+   🌿 Teal      #0d9488  — earth balance, health
+   
+   TEXT PHILOSOPHY:
+   Background is always dark → text is always light.
+   text-foreground      = bright near-white  (#f0f9ff)
+   text-muted-foreground= soft silver-blue   (#94a3b8)
+   Headers use Sora font with gradient (green → cyan)
+═══════════════════════════════════════════════════════════ */
+
+/* ── Instant background — fires before any JS ─────────────── */
+html {
+  background-color: hsl(var(--background, 222 47% 7%));
+  color-scheme: dark;
+  min-height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Always-light text on dark background */
+  color: #e2f0ff;
+
+  /* 4-color environmental mesh gradient */
+  background-color: #0a1628;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 10% 10%,  rgba(5, 150, 105, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90%  5%,  rgba(8, 145, 178, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 80% 90%,  rgba(13,148, 136, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at  5% 90%,  rgba(6, 182, 212, 0.05) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Headings always use Sora */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Sora', 'Inter', sans-serif;
+  color: #f0f9ff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CSS Tokens — single source of truth, always dark-mode values
+   (the app background is always dark, so foreground is always light)
+═══════════════════════════════════════════════════════════ */
+@layer base {
+  :root {
+    /* ── Backgrounds ── */
+    --background:  222 47%  7%;   /* #0f172a deep navy   */
+    --card:        222 40%  9%;   /* slightly lighter     */
+    --popover:     222 40% 10%;
+    --muted:       222 35% 14%;
+
+    /* ── FOREGROUND — always bright & readable ── */
+    --foreground:          210 40% 96%;   /* #f0f9ff  — near white-blue, crisp   */
+    --card-foreground:     210 40% 96%;
+    --popover-foreground:  210 40% 96%;
+    --muted-foreground:    215 25% 65%;   /* #94b3cb  — soft silver-blue, clear  */
+    --accent-foreground:   210 40% 96%;
+
+    /* ── Brand colors ── */
+    --primary:             161 84% 39%;   /* emerald  #10b981  */
+    --primary-foreground:    0  0% 100%;
+    --secondary:           197 90% 38%;   /* cyan     #0891b2  */
+    --secondary-foreground:  0  0% 100%;
+    --accent:              222 35% 16%;
+
+    /* ── Semantic ── */
+    --destructive:           4 86% 58%;
+    --destructive-foreground: 0  0% 100%;
+    --border:              222 30% 20%;
+    --input:               222 30% 20%;
+    --ring:                161 84% 39%;
+    --radius:              0.85rem;
+
+    /* ── Glass ── */
+    --glass-bg:     rgba(10, 22, 40, 0.60);
+    --glass-border: rgba(5, 150, 105, 0.18);
+  }
+
+  /* Dark class applies same values (no white flash on toggle) */
+  .dark {
+    --background:  222 47%  7%;
+    --card:        222 40%  9%;
+    --popover:     222 40% 10%;
+    --muted:       222 35% 14%;
+    --foreground:          210 40% 96%;
+    --card-foreground:     210 40% 96%;
+    --popover-foreground:  210 40% 96%;
+    --muted-foreground:    215 25% 65%;
+    --accent-foreground:   210 40% 96%;
+    --primary:             161 84% 39%;
+    --primary-foreground:    0  0% 100%;
+    --secondary:           197 90% 38%;
+    --secondary-foreground:  0  0% 100%;
+    --accent:              222 35% 16%;
+    --destructive:           4 86% 55%;
+    --destructive-foreground: 0  0% 100%;
+    --border:              222 30% 20%;
+    --input:               222 30% 20%;
+    --ring:                161 84% 39%;
+    --glass-bg:     rgba(10, 22, 40, 0.60);
+    --glass-border: rgba(5, 150, 105, 0.18);
+  }
+
+  /* Light mode overrides (env-themed soft sky colours) */
+  :root:not(.dark) {
+    --background:  168 60% 97%;
+    --card:          0  0% 100%;
+    --popover:       0  0% 100%;
+    --muted:       168 30% 91%;
+    --foreground:          222 47%  8%;   /* dark navy text on light bg  */
+    --card-foreground:     222 47%  8%;
+    --popover-foreground:  222 47%  8%;
+    --muted-foreground:    220 15% 40%;   /* readable mid-grey           */
+    --accent-foreground:   222 47%  8%;
+    --accent:              168 30% 86%;
+    --border:              168 25% 80%;
+    --input:               168 25% 84%;
+    --glass-bg:     rgba(255,255,255,0.60);
+    --glass-border: rgba(5,150,105,0.20);
+  }
+
+  /* Light mode — keep body text dark on light background */
+  :root:not(.dark) body {
+    color: #0f2d1e;
+    background-color: #e8f5f0;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 10% 10%, rgba(5,150,105,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 90%  5%, rgba(8,145,178,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 80% 90%, rgba(13,148,136,0.04) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 50% at  5% 90%, rgba(6,182,212,0.03) 0%, transparent 60%);
+  }
+
+  :root:not(.dark) h1,
+  :root:not(.dark) h2,
+  :root:not(.dark) h3,
+  :root:not(.dark) h4,
+  :root:not(.dark) h5,
+  :root:not(.dark) h6 {
+    color: #0a2010;
+  }
+
+  /* Accent overrides */
+  :root[data-accent="emerald"] { --primary: 161 84% 39%; --ring: 161 84% 39%; }
+  :root[data-accent="blue"]    { --primary: 217 91% 60%; --ring: 217 91% 60%; }
+  :root[data-accent="indigo"]  { --primary: 243 75% 59%; --ring: 243 75% 59%; }
+  :root[data-accent="rose"]    { --primary: 346 87% 61%; --ring: 346 87% 61%; }
+
+  * { @apply border-border; }
+
+  /* Apply CSS variables to body so Tailwind utility classes work correctly */
+  body {
+    @apply text-foreground;
+    background-color: transparent; /* allow html background to show through */
+    overscroll-behavior: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Utility Classes
+═══════════════════════════════════════════════════════════ */
+@layer utilities {
+  /* Glassmorphism */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .glass-card {
+    @apply glass rounded-2xl p-6 transition-all duration-300;
+  }
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgba(5,150,105,0.25), 0 8px 32px rgba(5,150,105,0.12), 0 16px 48px rgba(0,0,0,0.25);
+  }
+
+  /* Gradient text — green → cyan */
+  .text-gradient {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  /* Gradient text — indigo → green */
+  .text-gradient-indigo {
+    background: linear-gradient(135deg, #818cf8 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow helpers */
+  .glow-emerald { box-shadow: 0 0 30px rgba(5,150,105,0.35), 0 0 80px rgba(5,150,105,0.10); }
+  .glow-cyan    { box-shadow: 0 0 30px rgba(8,145,178,0.35), 0 0 80px rgba(8,145,178,0.10); }
+  .glow-teal    { box-shadow: 0 0 30px rgba(13,148,136,0.35), 0 0 80px rgba(13,148,136,0.10); }
+  .glow-indigo  { box-shadow: 0 0 30px rgba(99,102,241,0.35), 0 0 80px rgba(99,102,241,0.10); }
+
+  /* Pulsing live dot */
+  .live-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    animation: live-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-float { animation: float 4s ease-in-out infinite; }
+  .text-balance  { text-wrap: balance; }
+
+  /* Inner border */
+  .inner-border { position: relative; }
+  .inner-border::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    border: 1px solid rgba(5,150,105,0.08);
+    pointer-events: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Keyframe Animations
+═══════════════════════════════════════════════════════════ */
+@keyframes blob-drift {
+  0%   { transform: scale(1)    translate(  0,   0); }
+  33%  { transform: scale(1.08) translate( 3%,  4%); }
+  66%  { transform: scale(0.96) translate(-2%,  3%); }
+  100% { transform: scale(1.04) translate( 2%, -3%); }
+}
+
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0.7); }
+  50%       { box-shadow: 0 0 0 8px rgba(52,211,153,0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Scrollbar
+═══════════════════════════════════════════════════════════ */
+::-webkit-scrollbar         { width: 5px; height: 5px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   { background: rgba(5,150,105,0.40); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(5,150,105,0.65); }

@@ -21,6 +21,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 .env
+.env.local
+.env.*.local
 .venv
 env/
 venv/
@@ -50,3 +52,4 @@ Notebook/.ipynb_checkpoints
 *.pkl
 *.h5
 *.cbm
+catboost_info/

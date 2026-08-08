@@ -18,6 +18,9 @@ class RouteWaypointSchema(BaseModel):
     aqi_category: str
     health_risk: str
     travel_time_from_start_min: float
+    city_name: Optional[str] = None
+    temperature: Optional[float] = None
+    pm25: Optional[float] = None
 
 class RouteScoreSchema(BaseModel):
     pollution_score: float
@@ -33,11 +36,14 @@ class RouteScoreSchema(BaseModel):
     average_temperature: float = 0.0
     average_humidity: float = 0.0
     average_wind_speed: float = 0.0
+    is_rainy: bool = False
     prediction_confidence: float = 0.0
     aqi_category_distribution: dict = {}
 
 class RecommendedRoute(BaseModel):
     route_id: Optional[uuid.UUID] = None
+    start_address: Optional[str] = None
+    end_address: Optional[str] = None
     rank: int
     recommendation_reason: str
     health_recommendation_level: str
@@ -55,9 +61,12 @@ class RouteHistoryResponse(BaseModel):
     id: uuid.UUID
     start_lat: float
     start_lng: float
+    start_address: Optional[str] = None
     end_lat: float
     end_lng: float
+    end_address: Optional[str] = None
     total_distance_km: float
     estimated_duration_min: float
     created_at: datetime
     scores: Optional[List[RouteScoreSchema]] = None
+    waypoints: Optional[List[RouteWaypointSchema]] = None

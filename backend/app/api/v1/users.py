@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.schemas.user import UserRead, UserUpdate, PasswordChange
 from app.models.user import User
-from app.api.dependencies.auth import get_current_user
+from app.api.deps import get_current_user
 from app.repositories.user import UserRepository
 from app.services.user_service import UserService
 from app.core.security import verify_password, get_password_hash

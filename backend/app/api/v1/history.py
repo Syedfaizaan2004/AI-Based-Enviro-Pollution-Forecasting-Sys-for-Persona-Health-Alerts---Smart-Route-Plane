@@ -29,7 +29,7 @@ async def get_predictions_history(
     service = PredictionHistoryService(db)
     skip = (page - 1) * size
     filters = {"start_date": start_date, "end_date": end_date}
-    items, total = await service.repo.get_history(skip, size, sort_by, sort_desc, filters)
+    items, total = await service.get_history(current_user.id, skip, size, sort_by, sort_desc, filters)
     
     return {
         "items": items,
@@ -38,31 +38,30 @@ async def get_predictions_history(
         "current_page": page
     }
 
-@router.get("/predictions/{prediction_id}")
-async def get_prediction_by_id(
-    prediction_id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    service = PredictionHistoryService(db)
-    # The ID type for prediction_history is int according to Phase 2 (or uuid, wait, I'll use int since we passed int in Phase 6 stub)
-    # Let's verify type if it crashes.
-    pred = await service.repo.get_prediction(prediction_id)
-    if not pred:
-        raise HTTPException(status_code=404, detail="Prediction not found")
-    return pred
 
 @router.delete("/predictions/{prediction_id}")
 async def delete_prediction(
-    prediction_id: int,
+    prediction_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
     service = PredictionHistoryService(db)
-    success = await service.repo.delete_prediction(prediction_id)
+    pred = await service.get_prediction_by_id(prediction_id)
+    if not pred or str(pred.user_id) != str(current_user.id):
+        raise HTTPException(status_code=404, detail="Prediction not found")
+    success = await service.delete_prediction_by_id(prediction_id)
     if not success:
         raise HTTPException(status_code=404, detail="Prediction not found")
     return {"status": "deleted"}
+
+@router.delete("/predictions")
+async def delete_all_predictions(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    service = PredictionHistoryService(db)
+    count = await service.delete_all_user_predictions(current_user.id)
+    return {"status": "deleted", "count": count}
 
 # --- Routes ---
 # We already have /routes/history in routes.py, but Phase 8 requires /history/routes endpoints.
@@ -84,24 +83,57 @@ async def get_routes_history(
     filters = {"start_date": start_date, "end_date": end_date}
     items, total = await repo.get_history(current_user.id, skip, size, sort_by, sort_desc, filters)
     
+    responses = []
+    from app.schemas.route import RouteHistoryResponse, RouteScoreSchema, RouteWaypointSchema
+    for r in items:
+        scores = []
+        for s in r.scores:
+            scores.append(RouteScoreSchema(
+                pollution_score=s.pollution_score if hasattr(s, "pollution_score") else 0,
+                exposure_score=s.exposure_score if hasattr(s, "exposure_score") else 0,
+                travel_time_score=s.time_penalty_score,
+                health_score=s.health_risk_score,
+                smart_route_score=s.composite_score,
+                average_aqi=s.avg_aqi,
+                maximum_aqi=s.max_aqi
+            ))
+        
+        waypoints = []
+        for w in r.waypoints:
+            waypoints.append(RouteWaypointSchema(
+                latitude=w.latitude,
+                longitude=w.longitude,
+                predicted_aqi=w.predicted_aqi if w.predicted_aqi is not None else 0.0,
+                aqi_category=w.aqi_category if w.aqi_category is not None else "Unknown",
+                health_risk="Unknown",  # Or calculate if needed
+                travel_time_from_start_min=0.0,  # We don't save time offset currently
+                city_name=w.city_name,
+                temperature=w.temperature,
+                pm25=w.pm25
+            ))
+
+        responses.append(RouteHistoryResponse(
+            id=r.id,
+            start_lat=r.start_lat,
+            start_lng=r.start_lng,
+            start_address=r.start_address,
+            end_lat=r.end_lat,
+            end_lng=r.end_lng,
+            end_address=r.end_address,
+            total_distance_km=r.total_distance_km,
+            estimated_duration_min=r.estimated_duration_min,
+            created_at=r.created_at,
+            scores=scores,
+            waypoints=waypoints
+        ))
+
     return {
-        "items": items,
+        "items": responses,
         "total_count": total,
         "page_size": size,
         "current_page": page
     }
 
-@router.get("/routes/{route_id}")
-async def get_route_by_id(
-    route_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
-    repo = RouteRepository(db)
-    route = await repo.get_route(route_id)
-    if not route or route.user_id != current_user.id:
-        raise HTTPException(status_code=404, detail="Route not found")
-    return route
 
 @router.delete("/routes/{route_id}")
 async def delete_route(
@@ -110,9 +142,23 @@ async def delete_route(
     current_user: dict = Depends(get_current_user)
 ):
     repo = RouteRepository(db)
+    route = await repo.get_route(route_id)
+    if not route or route.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Route not found")
+        
     success = await repo.delete_route(route_id)
     if not success:
         raise HTTPException(status_code=404, detail="Route not found")
+    return {"status": "deleted"}
+
+@router.delete("/routes")
+async def delete_all_routes(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    repo = RouteRepository(db)
+    success = await repo.delete_all_user_routes(current_user.id)
+    # 200 OK even if no routes existed
     return {"status": "deleted"}
 
 # --- Exposure ---

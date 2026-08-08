@@ -45,38 +45,57 @@ class RouteRankingService:
             
         try:
             res = await self.geoapify_client.reverse_geocode(lat, lng)
-            city = "Unknown"
+            display_city = "Unknown"
+            search_city = "here"
             if res and res.get("features"):
                 properties = res["features"][0].get("properties", {})
-                city = properties.get("city", properties.get("town", properties.get("village", properties.get("county", "Unknown"))))
-            self.geocode_cache[cache_key] = city
-            return city
+                
+                name = properties.get("name") or properties.get("street")
+                city_part = properties.get("city") or properties.get("town") or properties.get("village") or properties.get("municipality")
+                region_part = properties.get("county") or properties.get("state_district") or properties.get("suburb") or properties.get("state")
+                
+                parts = []
+                if name:
+                    parts.append(str(name))
+                if city_part and str(city_part) not in parts:
+                    parts.append(str(city_part))
+                elif region_part and str(region_part) not in parts:
+                    parts.append(str(region_part))
+                    
+                if parts:
+                    display_city = ", ".join(parts[:2])
+                else:
+                    display_city = str(properties.get("formatted", "Unknown")).split(",")[0]
+                    
+                search_city = str(properties.get("city") or properties.get("town") or properties.get("county") or properties.get("state_district") or properties.get("state") or "here")
+                    
+            self.geocode_cache[cache_key] = (display_city, search_city)
+            return display_city, search_city
         except Exception as e:
             logger.warning(f"Geocoding failed for {lat}, {lng}: {str(e)}")
-            return "Unknown"
+            return "Unknown", "here"
 
-    async def _process_waypoint(self, lat: float, lng: float, time_offset_min: float, travel_dt: datetime, health_condition: HealthCondition, sem: asyncio.Semaphore) -> tuple[RouteWaypointSchema, PredictionResponse, str]:
+    async def _process_waypoint(self, lat: float, lng: float, time_offset_min: float, travel_dt: datetime, health_condition: HealthCondition, sem: asyncio.Semaphore, user_id: str = None) -> tuple[RouteWaypointSchema, PredictionResponse, str]:
         async with sem:
             prediction_dt = travel_dt + timedelta(minutes=time_offset_min)
-            city = await self._resolve_city(lat, lng)
+            display_city, search_city = await self._resolve_city(lat, lng)
             req = PredictionRequest(
                 latitude=lat,
                 longitude=lng,
                 prediction_time=prediction_dt,
-                city=city,
-                health_condition=health_condition
+                city=search_city,
+                health_condition=health_condition,
+                user_id=str(user_id) if user_id else None
             )
             try:
                 prediction = await self.ml_service.predict_aqi(req)
                 wp = RouteWaypointSchema(
-                    latitude=lat,
-                    longitude=lng,
-                    predicted_aqi=prediction.predicted_aqi,
-                    aqi_category=prediction.aqi_category.value,
-                    health_risk=prediction.health_risk_level,
-                    travel_time_from_start_min=time_offset_min
+                    latitude=lat, longitude=lng, predicted_aqi=prediction.predicted_aqi,
+                    aqi_category=prediction.aqi_category.value, health_risk=prediction.health_risk_level,
+                    travel_time_from_start_min=time_offset_min, city_name=display_city,
+                    temperature=prediction.temperature, pm25=prediction.pm25
                 )
-                return wp, prediction, city
+                return wp, prediction, display_city
             except Exception as e:
                 logger.error(f"Failed to process waypoint {lat}, {lng}: {str(e)}")
                 # Return dummy
@@ -99,11 +118,12 @@ class RouteRankingService:
                 )
                 wp = RouteWaypointSchema(
                     latitude=lat, longitude=lng, predicted_aqi=100.0,
-                    aqi_category="Moderate", health_risk="Moderate", travel_time_from_start_min=time_offset_min
+                    aqi_category="Moderate", health_risk="Moderate", travel_time_from_start_min=time_offset_min, city_name=display_city,
+                    temperature=20.0, pm25=0.0
                 )
-                return wp, dummy_pred, "Unknown"
+                return wp, dummy_pred, display_city
 
-    async def process_route(self, route: Dict[str, Any], travel_dt: datetime, health_condition: HealthCondition) -> RecommendedRoute:
+    async def process_route(self, route: Dict[str, Any], travel_dt: datetime, health_condition: HealthCondition, user_id: str = None) -> RecommendedRoute:
         distance_km = route.get("distanceMeters", 0) / 1000.0
         duration_str = route.get("duration", "0s")
         duration_min = float(duration_str.replace("s", "")) / 60.0
@@ -119,7 +139,7 @@ class RouteRankingService:
         tasks = []
         for i, (lat, lng) in enumerate(waypoints_latlng):
             time_offset = (i / max(1, len(waypoints_latlng) - 1)) * duration_min
-            tasks.append(self._process_waypoint(lat, lng, time_offset, travel_dt, health_condition, sem))
+            tasks.append(self._process_waypoint(lat, lng, time_offset, travel_dt, health_condition, sem, user_id))
             
         results = await asyncio.gather(*tasks)
         
@@ -173,6 +193,7 @@ class RouteRankingService:
             average_temperature=avg_temp,
             average_humidity=avg_hum,
             average_wind_speed=avg_wind,
+            is_rainy=avg_hum > 70.0,
             prediction_confidence=avg_conf,
             aqi_category_distribution=cat_dist
         )
@@ -182,6 +203,8 @@ class RouteRankingService:
         
         return RecommendedRoute(
             rank=0,
+            start_address=route.get("start_address"),
+            end_address=route.get("end_address"),
             recommendation_reason="",
             health_recommendation_level="Safe",
             travel_time_min=duration_min,
@@ -191,7 +214,7 @@ class RouteRankingService:
             polyline=poly_str
         )
 
-    async def get_smart_routes(self, source: str, destination: str, travel_dt: datetime, health_condition: HealthCondition) -> tuple[RecommendedRoute, List[RecommendedRoute]]:
+    async def get_smart_routes(self, source: str, destination: str, travel_dt: datetime, health_condition: HealthCondition, user_id: str = None) -> tuple[RecommendedRoute, List[RecommendedRoute]]:
         try:
             raw_data = await self.maps_service.client.directions(source, destination, alternatives=True)
             routes = raw_data.get("routes", [])
@@ -202,7 +225,12 @@ class RouteRankingService:
         if not routes:
             raise HTTPException(status_code=404, detail="No routes found")
             
-        route_tasks = [self.process_route(r, travel_dt, health_condition) for r in routes]
+        route_tasks = []
+        for r in routes:
+            r["start_address"] = source
+            r["end_address"] = destination
+            route_tasks.append(self.process_route(r, travel_dt, health_condition, user_id))
+        
         processed_routes = await asyncio.gather(*route_tasks)
         
         processed_routes.sort(key=lambda r: r.scores.smart_route_score)

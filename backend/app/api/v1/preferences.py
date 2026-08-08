@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.schemas.preferences import UserPreferencesRead, UserPreferencesUpdate
 from app.models.user import User
-from app.api.dependencies.auth import get_current_user
+from app.api.deps import get_current_user
 from app.services.preference_service import PreferenceService
 
 router = APIRouter(prefix="/preferences", tags=["User Preferences"])

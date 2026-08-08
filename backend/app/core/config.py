@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     WAQI_API_KEY: Optional[str] = None
     GEOAPIFY_API_KEY: Optional[str] = None
     SARVAM_AI_KEY: Optional[str] = None
+    GROQ_API_KEY: Optional[str] = None
+
+    CORS_ORIGINS: str = "http://localhost:5173"
 
     model_config = SettingsConfigDict(env_file=(".env", "../.env"), env_file_encoding="utf-8", extra="ignore")
 

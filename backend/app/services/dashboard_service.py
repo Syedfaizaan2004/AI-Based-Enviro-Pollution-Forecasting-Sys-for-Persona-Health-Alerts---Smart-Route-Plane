@@ -29,7 +29,7 @@ class DashboardService:
 
     async def get_summary(self, user_id: uuid.UUID) -> DashboardSummaryResponse:
         cards_raw = await self.dash_repo.get_dashboard_summary(user_id)
-        pred_raw = await self.analytics_repo.get_prediction_analytics()
+        pred_raw = await self.analytics_repo.get_prediction_analytics(user_id)
         route_raw = await self.analytics_repo.get_route_analytics(user_id)
         health_raw = await self.analytics_repo.get_health_analytics(user_id)
         stats = await self.stats_service.get_statistics(user_id)

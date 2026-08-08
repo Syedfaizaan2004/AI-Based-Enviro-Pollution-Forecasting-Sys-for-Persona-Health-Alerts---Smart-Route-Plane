@@ -14,6 +14,12 @@ class GeoapifyClient(BaseClient):
         response = await self.get(endpoint, params=params)
         return response.json()
 
+    async def autocomplete(self, text: str) -> dict:
+        endpoint = "geocode/autocomplete"
+        params = {"text": text, "apiKey": self.api_key}
+        response = await self.get(endpoint, params=params)
+        return response.json()
+
     async def reverse_geocode(self, lat: float, lng: float) -> dict:
         endpoint = "geocode/reverse"
         params = {"lat": lat, "lon": lng, "apiKey": self.api_key}

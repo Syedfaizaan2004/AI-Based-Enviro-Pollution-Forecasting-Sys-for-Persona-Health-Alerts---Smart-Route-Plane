@@ -170,16 +170,16 @@ class NotificationService:
             
         return [self._map_to_response(n) for n in notifs]
 
-    async def get_notification(self, notif_id: uuid.UUID) -> Optional[NotificationResponse]:
-        notif = await self.repo.get_notification(notif_id)
+    async def get_notification(self, notif_id: uuid.UUID, user_id: uuid.UUID) -> Optional[NotificationResponse]:
+        notif = await self.repo.get_notification(notif_id, user_id)
         return self._map_to_response(notif) if notif else None
 
-    async def mark_as_read(self, notif_id: uuid.UUID) -> Optional[NotificationResponse]:
-        notif = await self.repo.mark_as_read(notif_id)
+    async def mark_as_read(self, notif_id: uuid.UUID, user_id: uuid.UUID) -> Optional[NotificationResponse]:
+        notif = await self.repo.mark_as_read(notif_id, user_id)
         return self._map_to_response(notif) if notif else None
 
     async def mark_all_read(self, user_id: uuid.UUID):
         await self.repo.mark_all_read(user_id)
 
-    async def delete_notification(self, notif_id: uuid.UUID) -> bool:
-        return await self.repo.delete_notification(notif_id)
+    async def delete_notification(self, notif_id: uuid.UUID, user_id: uuid.UUID) -> bool:
+        return await self.repo.delete_notification(notif_id, user_id)
