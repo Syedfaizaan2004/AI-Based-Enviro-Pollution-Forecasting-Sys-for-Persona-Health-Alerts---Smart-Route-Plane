@@ -13,7 +13,22 @@ export const authService = {
         id: data.user.id,
         email: data.user.email,
         fullName: data.user.username, // mapping backend username to frontend fullName
-        role: data.user.role,
+        role: (data.user?.role || data.role || 'user').toLowerCase(),
+        createdAt: data.user?.created_at || data.created_at,
+      }
+    };
+  },
+
+  googleLogin: async (credential: string): Promise<AuthResponse> => {
+    const { data } = await api.post(ENDPOINTS.AUTH.GOOGLE, { credential });
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        fullName: data.user.username,
+        role: (data.user.role || 'user').toLowerCase(),
         createdAt: data.user.created_at,
       }
     };
@@ -33,7 +48,7 @@ export const authService = {
         id: data.id,
         email: data.email,
         fullName: data.username,
-        role: data.role,
+        role: (data.role || 'user').toLowerCase(),
         createdAt: data.created_at,
       }
     };
@@ -57,7 +72,7 @@ export const authService = {
       id: data.id,
       email: data.email,
       fullName: data.username,
-      role: data.role,
+      role: (data.role || 'user').toLowerCase(),
       createdAt: data.created_at,
     };
   }

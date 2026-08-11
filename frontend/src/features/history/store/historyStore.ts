@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { HistoryFilters } from '../types/history';
 
-export type HistoryTab = 'predictions' | 'routes' | 'health';
+export type HistoryTab = 'predictions' | 'routes' | 'health' | 'feedback';
 
 interface HistoryState {
   activeTab: HistoryTab;

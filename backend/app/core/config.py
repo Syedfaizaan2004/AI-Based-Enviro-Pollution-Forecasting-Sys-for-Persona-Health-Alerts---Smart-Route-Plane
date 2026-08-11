@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     GEOAPIFY_API_KEY: Optional[str] = None
     SARVAM_AI_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
+    GOOGLE_CLIENT_ID: Optional[str] = None
 
     CORS_ORIGINS: str = "http://localhost:5173"
 

@@ -16,6 +16,7 @@ from app.api.v1.maps import router as maps_router
 from app.api.v1.system import router as system_router
 from app.api.v1.translation import router as translation_router
 from app.api.v1.chat import router as chat_router
+from app.api.v1.feedback import router as feedback_router
 
 api_router = APIRouter()
 
@@ -37,3 +38,4 @@ api_router.include_router(history_router)
 api_router.include_router(admin_router)
 api_router.include_router(translation_router)
 api_router.include_router(chat_router)
+api_router.include_router(feedback_router)

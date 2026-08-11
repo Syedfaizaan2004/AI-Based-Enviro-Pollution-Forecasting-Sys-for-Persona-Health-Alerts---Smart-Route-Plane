@@ -9,13 +9,16 @@ import { toast } from 'react-hot-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/glass-card';
+import { GoogleAuthButton } from '@/features/auth/components/GoogleAuthButton';
 import { loginSchema, type LoginFormValues } from '@/features/auth/validation/auth';
 import { authService } from '@/features/auth/services/auth';
+import type { AuthResponse } from '@/features/auth/types/auth';
 import { useAuthStore } from '@/store/authStore';
 import { getApiErrorMessage } from '@/utils/apiError';
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const navigate = useNavigate();
   const setSession = useAuthStore((state) => state.setSession);
 
@@ -27,18 +30,34 @@ export const Login = () => {
     resolver: zodResolver(loginSchema),
   });
 
+  const completeLogin = (res: AuthResponse) => {
+    setSession(res.accessToken, res.refreshToken, res.user);
+    toast.success('Welcome back!');
+    if (res.user.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   const onSubmit = async (data: LoginFormValues) => {
     try {
       const res = await authService.login(data);
-      setSession(res.accessToken, res.refreshToken, res.user);
-      toast.success('Welcome back!');
-      if (res.user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      completeLogin(res);
     } catch (error: any) {
       toast.error(getApiErrorMessage(error, 'Failed to login'));
+    }
+  };
+
+  const handleGoogleCredential = async (credential: string) => {
+    try {
+      setIsGoogleSubmitting(true);
+      const res = await authService.googleLogin(credential);
+      completeLogin(res);
+    } catch (error: any) {
+      toast.error(getApiErrorMessage(error, 'Failed to login with Google'));
+    } finally {
+      setIsGoogleSubmitting(false);
     }
   };
 
@@ -51,7 +70,7 @@ export const Login = () => {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 mix-blend-luminosity scale-105 animate-pulse duration-10000"
           style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=3113&auto=format&fit=crop")' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-secondary/40 mix-blend-overlay" />
         
         <div className="relative z-10 p-14 flex flex-col justify-between h-full w-full">
@@ -72,7 +91,7 @@ export const Login = () => {
                 Live Healthier.
               </span>
             </h1>
-            <p className="text-lg text-white/80 leading-relaxed font-light drop-shadow-md">
+            <p className="text-lg text-white leading-relaxed font-medium drop-shadow-md">
               Harness the power of AI to track environmental pollution, receive personalized health alerts, and plan the smartest routes for your daily commute.
             </p>
             
@@ -83,7 +102,7 @@ export const Login = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Live Analytics</h3>
-                  <p className="text-xs text-white/70">Real-time AQI tracking</p>
+                  <p className="text-xs text-white/90">Real-time AQI tracking</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20">
@@ -92,7 +111,7 @@ export const Login = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Health Alerts</h3>
-                  <p className="text-xs text-white/70">Personalized safety</p>
+                  <p className="text-xs text-white/90">Personalized safety</p>
                 </div>
               </div>
             </div>
@@ -174,11 +193,24 @@ export const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full h-12 rounded-xl text-base font-semibold shadow-xl shadow-primary/25 transition-all hover:translate-y-[-2px] hover:shadow-primary/35"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isGoogleSubmitting}
               >
                 {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Sign in"}
               </Button>
             </form>
+
+            <div className="my-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs font-medium text-muted-foreground">or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <GoogleAuthButton
+              text="signin_with"
+              isLoading={isSubmitting || isGoogleSubmitting}
+              onCredential={handleGoogleCredential}
+              onError={(message) => toast.error(message)}
+            />
 
             <div className="mt-8 text-center text-sm">
               <span className="text-muted-foreground">Don't have an account? </span>

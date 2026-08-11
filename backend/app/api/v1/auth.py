@@ -1,10 +1,14 @@
 from json import JSONDecodeError
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import secrets
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 from pydantic import ValidationError
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.models.user import User
@@ -14,6 +18,7 @@ from app.schemas.admin import AdminRegister
 from app.schemas.token import (
     AuthMessageResponse,
     ForgotPasswordRequest,
+    GoogleLoginRequest,
     RefreshTokenRequest,
     ResetPasswordRequest,
     Token,
@@ -21,6 +26,7 @@ from app.schemas.token import (
 )
 from app.services.auth_service import AuthService
 from app.api.dependencies.auth import get_current_user, oauth2_scheme
+from app.repositories.health_profile import HealthProfileRepository
 from app.repositories.user import UserRepository
 from jose import jwt, JWTError
 from app.core.config import settings
@@ -28,6 +34,36 @@ from app.core.security import create_access_token, create_refresh_token, get_pas
 from app.core.redis import redis_client
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+GOOGLE_TOKEN_ISSUERS = {"accounts.google.com", "https://accounts.google.com"}
+
+
+def _login_response_for_user(user: User) -> dict:
+    return {
+        "access_token": create_access_token(user.id),
+        "refresh_token": create_refresh_token(user.id),
+        "token_type": "bearer",
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        "user": user,
+    }
+
+
+def _google_username_base(name: Optional[str], email: str) -> str:
+    username = " ".join((name or "").split()) or email.split("@")[0]
+    username = username.strip()[:50]
+    return username if len(username) >= 3 else f"{username} user".strip()[:50]
+
+
+async def _unique_google_username(db: AsyncSession, name: Optional[str], email: str) -> str:
+    base = _google_username_base(name, email)
+    candidate = base
+    suffix = 2
+
+    while await db.scalar(select(User.id).where(User.username == candidate)):
+        suffix_text = f" {suffix}"
+        candidate = f"{base[:50 - len(suffix_text)]}{suffix_text}"
+        suffix += 1
+
+    return candidate
 
 
 def _create_action_token(subject: uuid.UUID, token_type: str, expires_minutes: int = 30) -> str:
@@ -188,6 +224,67 @@ async def login(
 
     auth_service = AuthService()
     return await auth_service.authenticate(db, email, password)
+
+
+@router.post("/google", response_model=LoginResponse)
+async def google_login(
+    request_data: GoogleLoginRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    if not settings.GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=500, detail="Google login is not configured")
+
+    try:
+        idinfo = google_id_token.verify_oauth2_token(
+            request_data.credential,
+            google_requests.Request(),
+            settings.GOOGLE_CLIENT_ID,
+        )
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google token")
+
+    if idinfo.get("iss") not in GOOGLE_TOKEN_ISSUERS:
+        raise HTTPException(status_code=401, detail="Invalid Google token issuer")
+
+    email = idinfo.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Google account email is required")
+
+    if not idinfo.get("email_verified"):
+        raise HTTPException(status_code=403, detail="Google account email is not verified")
+
+    email = email.lower()
+    user = await db.scalar(select(User).where(User.email == email))
+
+    if user:
+        if user.is_deleted:
+            raise HTTPException(status_code=403, detail="Account has been deleted")
+        if not user.is_active:
+            raise HTTPException(status_code=403, detail="Inactive user")
+        if not user.is_verified:
+            user.is_verified = True
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+
+        return _login_response_for_user(user)
+
+    username = await _unique_google_username(db, idinfo.get("name"), email)
+    user = User(
+        email=email,
+        username=username,
+        hashed_password=get_password_hash(secrets.token_urlsafe(32)),
+        role=UserRole.USER,
+        is_active=True,
+        is_verified=True,
+    )
+
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    await HealthProfileRepository().create(db, obj_in={"user_id": user.id})
+
+    return _login_response_for_user(user)
 
 
 @router.get("/me", response_model=UserRead)

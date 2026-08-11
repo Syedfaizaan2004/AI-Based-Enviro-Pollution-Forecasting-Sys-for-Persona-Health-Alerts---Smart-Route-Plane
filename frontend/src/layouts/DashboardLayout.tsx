@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -14,7 +15,8 @@ import {
   LogOut,
   MapPin,
   Menu,
-  Leaf
+  Leaf,
+  MessageSquare
 } from 'lucide-react';
 
 import { ThemeToggle } from '@/components/shared/theme-toggle';
@@ -30,6 +32,7 @@ import { LiveAlertBanner } from '@/features/notifications/components/LiveAlertBa
 import { useNotificationStore } from '@/features/notifications/store/notificationStore';
 import { useNotificationsList, useNotificationPreferences } from '@/features/notifications/hooks/useNotifications';
 import { ChatBot } from '@/features/chat/components/ChatBot';
+import { FeedbackFormModal } from '@/features/feedback/components/FeedbackFormModal';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -38,10 +41,12 @@ const navItems = [
   { path: '/health', label: 'Health', icon: HeartPulse },
   { path: '/history', label: 'History', icon: History },
   { path: '/settings', label: 'Settings', icon: Settings },
+  { path: '#feedback', label: 'Feedback', icon: MessageSquare },
 ];
 
 export function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [currentCity, setCurrentCity] = useState('');
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -88,12 +93,15 @@ export function DashboardLayout() {
     }
   }, [user?.city]);
 
+  const queryClient = useQueryClient();
+
   const handleLogout = async () => {
     try {
       await authService.logout();
     } catch {
       // Proceed with client-side logout even if API call fails
     } finally {
+      queryClient.clear();
       clearSession();
       navigate('/login');
     }
@@ -117,8 +125,14 @@ export function DashboardLayout() {
           return (
             <motion.div key={item.path} whileHover={{ x: 4, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
               <NavLink
-                to={item.path}
-                onClick={() => setSidebarOpen(false)}
+                to={item.path === '#feedback' ? '#' : item.path}
+                onClick={(e) => {
+                  if (item.path === '#feedback') {
+                    e.preventDefault();
+                    setIsFeedbackModalOpen(true);
+                  }
+                  setSidebarOpen(false);
+                }}
                 className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 group shadow-sm hover:shadow-md"
                 style={isActive
                   ? {background:'linear-gradient(135deg,#059669,#0891b2)', color:'#ffffff', boxShadow:'0 4px 12px rgba(5,150,105,0.3)', border:'1px solid rgba(255,255,255,0.1)'}
@@ -284,6 +298,7 @@ export function DashboardLayout() {
       
       <NotificationCenter />
       <ChatBot />
+      <FeedbackFormModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
     </div>
   );
 }

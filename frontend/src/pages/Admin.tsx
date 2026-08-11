@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, HardDrive, Terminal, Bell,
   FileText, User as UserIcon, LogOut, ShieldAlert, Menu, X,
-  ChevronRight
+  ChevronRight, MessageSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '@/store/authStore';
@@ -14,8 +15,9 @@ import { ApiLogsTable } from '@/features/admin/components/ApiLogsTable';
 import { NotificationLogsTable } from '@/features/admin/components/NotificationLogsTable';
 import { HealthAdvisoryCms } from '@/features/admin/components/HealthAdvisoryCms';
 import { AdminProfile } from '@/features/admin/components/AdminProfile';
+import { FeedbackManagementTable } from '@/features/admin/components/FeedbackManagementTable';
 
-type AdminTab = 'overview' | 'profile' | 'users' | 'system' | 'logs' | 'notifications' | 'cms';
+type AdminTab = 'overview' | 'profile' | 'users' | 'system' | 'logs' | 'notifications' | 'cms' | 'feedback';
 
 const tabs = [
   { id: 'overview',       label: 'Dashboard',         icon: LayoutDashboard, color: '#059669' }, /* Emerald */
@@ -25,6 +27,7 @@ const tabs = [
   { id: 'system',         label: 'System & Cache',     icon: HardDrive,       color: '#14b8a6' }, /* Light Teal */
   { id: 'logs',           label: 'System Logs',        icon: Terminal,        color: '#475569' }, /* Slate/Stone */
   { id: 'notifications',  label: 'Notifications',      icon: Bell,            color: '#f59e0b' }, /* Amber */
+  { id: 'feedback',       label: 'User Feedback',      icon: MessageSquare,   color: '#8b5cf6' }, /* Violet */
 ] as const;
 
 function renderContent(tab: AdminTab) {
@@ -36,6 +39,7 @@ function renderContent(tab: AdminTab) {
     case 'system':        return <SystemManagement />;
     case 'logs':          return <ApiLogsTable />;
     case 'notifications': return <NotificationLogsTable />;
+    case 'feedback':      return <FeedbackManagementTable />;
     default:              return null;
   }
 }
@@ -46,7 +50,12 @@ export function Admin() {
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  const handleLogout = () => { clearSession(); navigate('/login'); };
+  const queryClient = useQueryClient();
+  const handleLogout = () => { 
+    queryClient.clear();
+    clearSession(); 
+    navigate('/login'); 
+  };
   const activeTabInfo = tabs.find(t => t.id === activeTab)!;
 
   if (!user || user.role !== 'admin') {

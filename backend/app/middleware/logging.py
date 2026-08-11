@@ -34,7 +34,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                             status_code=status_code,
                             response_time_ms=execution_time_ms,
                             client_ip=request.client.host if request.client else "127.0.0.1",
-                            status="error" if status_code >= 400 else "success",
+                            status="failure" if status_code >= 400 else "success",
                             error_message=None # We don't have the exact error string here without intercepting the body
                         )
                         session.add(db_log)

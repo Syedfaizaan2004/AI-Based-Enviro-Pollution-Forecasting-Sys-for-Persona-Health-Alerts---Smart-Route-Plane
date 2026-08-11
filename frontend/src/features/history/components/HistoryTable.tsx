@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Trash2, ChevronLeft, ChevronRight, Activity, Map, Wind } from 'lucide-react';
+import { Trash2, ChevronLeft, ChevronRight, Activity, Map, Wind, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { GlassCard } from '@/components/ui/glass-card';
@@ -20,15 +20,22 @@ import { ExportToolbar } from './ExportToolbar';
 import { CityName } from './CityName';
 import { PredictionDetailsModal } from './PredictionDetailsModal';
 import { RouteDetailsModal } from './RouteDetailsModal';
+import { FeedbackDetailsModal } from './FeedbackDetailsModal';
 import { useState } from 'react';
 import type { PredictionHistoryResponse } from '../types/history';
 import type { RouteHistoryResponse } from '@/features/routes/types/route';
+import { useMyFeedback } from '@/features/feedback/hooks/useFeedback';
 
 export function HistoryTable() {
   const { activeTab, setActiveTab, filters, setFilters } = useHistoryStore();
   
   const { data: predictionsData, isLoading: isLoadingPreds } = usePredictionsHistory(filters);
   const { data: routesData, isLoading: isLoadingRoutes } = useRoutesHistory(filters);
+  
+  // Feedback pagination (using the same page/size filter for simplicity)
+  const skip = ((filters.page || 1) - 1) * (filters.size || 10);
+  const limit = filters.size || 10;
+  const { data: feedbackData, isLoading: isLoadingFeedback } = useMyFeedback(skip, limit);
 
   const deletePrediction = useDeletePrediction();
   const deleteAllPredictions = useDeleteAllPredictions();
@@ -37,11 +44,13 @@ export function HistoryTable() {
 
   const [selectedPrediction, setSelectedPrediction] = useState<PredictionHistoryResponse | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<RouteHistoryResponse | null>(null);
+  const [selectedFeedback, setSelectedFeedback] = useState<any | null>(null);
 
   const tabs: { id: HistoryTab; label: string; icon: any }[] = [
     { id: 'predictions', label: 'Predictions', icon: Wind },
     { id: 'routes', label: 'Smart Routes', icon: Map },
     { id: 'health', label: 'Health Exposure', icon: Activity },
+    { id: 'feedback', label: 'Feedback', icon: MessageSquare },
   ];
 
   const handleNextPage = () => setFilters({ page: filters.page + 1 });
@@ -254,6 +263,60 @@ export function HistoryTable() {
     );
   };
 
+  const renderFeedback = () => {
+    if (isLoadingFeedback) return <TableSkeleton />;
+    if (!feedbackData?.items.length) return <EmptyState />;
+
+    return (
+      <div className="w-full overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs text-muted-foreground uppercase bg-muted/50 border-b border-border/50">
+            <tr>
+              <th className="px-6 py-4 font-medium">Date</th>
+              <th className="px-6 py-4 font-medium">Category</th>
+              <th className="px-6 py-4 font-medium">Subject</th>
+              <th className="px-6 py-4 font-medium">Rating</th>
+              <th className="px-6 py-4 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/50">
+            {feedbackData.items.map((item) => (
+              <tr 
+                key={item.id} 
+                className="hover:bg-muted/30 transition-colors cursor-pointer"
+                onClick={() => setSelectedFeedback(item)}
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-muted-foreground">
+                  {format(new Date(item.created_at), 'MMM d, yyyy HH:mm')}
+                </td>
+                <td className="px-6 py-4">
+                  <Badge variant="outline" className="text-[10px] uppercase">
+                    {item.category.replace('_', ' ')}
+                  </Badge>
+                </td>
+                <td className="px-6 py-4 font-medium text-foreground">
+                  {item.subject}
+                </td>
+                <td className="px-6 py-4 text-amber-400">
+                  {item.rating ? `${item.rating} / 5` : '--'}
+                </td>
+                <td className="px-6 py-4">
+                  <Badge variant={
+                    item.status === 'resolved' ? 'default' : 
+                    item.status === 'reviewed' ? 'secondary' : 'outline'
+                  } className="text-[10px] uppercase">
+                    {item.status}
+                  </Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {renderPagination(feedbackData.page, feedbackData.total_count, feedbackData.size)}
+      </div>
+    );
+  };
+
   const renderPagination = (currentPage: number, total: number, size: number) => {
     const totalPages = Math.ceil(total / size) || 1;
     return (
@@ -287,7 +350,9 @@ export function HistoryTable() {
 
   const currentData = activeTab === 'predictions' 
     ? predictionsData?.items 
-    : routesData?.items;
+    : activeTab === 'feedback'
+      ? feedbackData?.items
+      : routesData?.items;
 
   return (
     <div className="space-y-4">
@@ -358,6 +423,7 @@ export function HistoryTable() {
             {activeTab === 'predictions' && renderPredictions()}
             {activeTab === 'routes' && renderRoutes()}
             {activeTab === 'health' && renderExposure()}
+            {activeTab === 'feedback' && renderFeedback()}
           </motion.div>
         </AnimatePresence>
       </GlassCard>
@@ -372,6 +438,12 @@ export function HistoryTable() {
         route={selectedRoute}
         isOpen={!!selectedRoute}
         onClose={() => setSelectedRoute(null)}
+      />
+
+      <FeedbackDetailsModal
+        feedback={selectedFeedback}
+        isOpen={!!selectedFeedback}
+        onClose={() => setSelectedFeedback(null)}
       />
     </div>
   );

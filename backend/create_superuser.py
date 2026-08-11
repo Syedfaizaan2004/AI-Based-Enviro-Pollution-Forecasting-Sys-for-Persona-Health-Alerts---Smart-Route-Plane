@@ -27,14 +27,55 @@ async def main():
     async with AsyncSessionLocal() as db:
         stmt = select(User).where((User.email == email) | (User.username == username))
         result = await db.execute(stmt)
-        existing_user = result.scalars().first()
+        existing_users = result.scalars().all()
         
-        if existing_user:
-            if existing_user.email == email:
-                print(f"Error: User with email {email} already exists.")
-            else:
+        if existing_users:
+            email_user = next((user for user in existing_users if user.email == email), None)
+            username_user = next((user for user in existing_users if user.username == username), None)
+
+            if email_user and username_user and email_user.id != username_user.id:
+                print("Error: Email and username belong to different existing users.")
+                sys.exit(1)
+
+            existing_user = email_user or username_user
+
+            if existing_user.email != email:
                 print(f"Error: Username {username} is already taken.")
-            sys.exit(1)
+                sys.exit(1)
+
+            if existing_user.username != username:
+                print(
+                    f"Error: User with email {email} already exists as "
+                    f"username '{existing_user.username}'."
+                )
+                sys.exit(1)
+
+            if existing_user.role != UserRole.ADMIN:
+                print("Error: Existing user is not an admin. Refusing to modify the account.")
+                sys.exit(1)
+
+            changes = []
+            if not existing_user.is_active:
+                existing_user.is_active = True
+                changes.append("activated")
+            if existing_user.is_deleted:
+                existing_user.is_deleted = False
+                existing_user.deleted_at = None
+                changes.append("restored")
+            if not existing_user.is_verified:
+                existing_user.is_verified = True
+                changes.append("verified")
+
+            if not changes:
+                print(f"Info: Admin '{username}' ({email}) already exists and is active.")
+                return
+
+            await db.commit()
+            print(
+                f"Success: Admin '{username}' ({email}) "
+                f"{', '.join(changes)} successfully!"
+            )
+            return
             
         hashed_password = get_password_hash(password)
         new_admin = User(

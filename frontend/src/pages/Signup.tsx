@@ -9,14 +9,19 @@ import { toast } from 'react-hot-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/glass-card';
+import { GoogleAuthButton } from '@/features/auth/components/GoogleAuthButton';
 import { signupSchema, type SignupFormValues } from '@/features/auth/validation/auth';
 import { authService } from '@/features/auth/services/auth';
+import type { AuthResponse } from '@/features/auth/types/auth';
+import { useAuthStore } from '@/store/authStore';
 import { getApiErrorMessage } from '@/utils/apiError';
 
 export const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const navigate = useNavigate();
+  const setSession = useAuthStore((state) => state.setSession);
 
   const {
     register,
@@ -29,6 +34,16 @@ export const Signup = () => {
 
   const passwordValue = watch('password', '');
 
+  const completeGoogleSignup = (res: AuthResponse) => {
+    setSession(res.accessToken, res.refreshToken, res.user);
+    toast.success('Welcome to AirSense.AI!');
+    if (res.user.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   const onSubmit = async (data: SignupFormValues) => {
     try {
       await authService.signup(data);
@@ -36,6 +51,18 @@ export const Signup = () => {
       navigate('/login');
     } catch (error: any) {
       toast.error(getApiErrorMessage(error, 'Failed to create account'));
+    }
+  };
+
+  const handleGoogleCredential = async (credential: string) => {
+    try {
+      setIsGoogleSubmitting(true);
+      const res = await authService.googleLogin(credential);
+      completeGoogleSignup(res);
+    } catch (error: any) {
+      toast.error(getApiErrorMessage(error, 'Failed to sign up with Google'));
+    } finally {
+      setIsGoogleSubmitting(false);
     }
   };
 
@@ -59,7 +86,7 @@ export const Signup = () => {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-luminosity scale-105 animate-pulse duration-10000"
           style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=3540&auto=format&fit=crop")' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30 mix-blend-overlay" />
         
         <div className="relative z-10 p-14 flex flex-col justify-between h-full w-full">
@@ -87,7 +114,7 @@ export const Signup = () => {
                 "Real-time tracking of 6 key pollutants",
                 "Join a community of health-conscious individuals"
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-white/80">
+                <li key={i} className="flex items-start gap-3 text-white/90">
                   <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0" />
                   <span className="text-base">{item}</span>
                 </li>
@@ -226,10 +253,23 @@ export const Signup = () => {
                 {errors.termsAccepted && <p className="text-xs text-destructive pl-4">{errors.termsAccepted.message}</p>}
               </div>
 
-              <Button type="submit" className="w-full h-12 rounded-xl text-base font-semibold shadow-xl shadow-primary/25 transition-all hover:translate-y-[-2px] hover:shadow-primary/35" disabled={isSubmitting}>
+              <Button type="submit" className="w-full h-12 rounded-xl text-base font-semibold shadow-xl shadow-primary/25 transition-all hover:translate-y-[-2px] hover:shadow-primary/35" disabled={isSubmitting || isGoogleSubmitting}>
                 {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Create Account"}
               </Button>
             </form>
+
+            <div className="my-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs font-medium text-muted-foreground">or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <GoogleAuthButton
+              text="signup_with"
+              isLoading={isSubmitting || isGoogleSubmitting}
+              onCredential={handleGoogleCredential}
+              onError={(message) => toast.error(message)}
+            />
 
             <div className="mt-8 text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>
