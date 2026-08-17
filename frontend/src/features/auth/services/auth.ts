@@ -54,6 +54,27 @@ export const authService = {
     };
   },
 
+  adminSignup: async (userData: SignupFormValues, token: string): Promise<AuthResponse> => {
+    const payload = {
+      email: userData.email,
+      password: userData.password,
+      username: userData.fullName,
+      token: token,
+    };
+    const { data } = await api.post('/auth/admin/register', payload);
+    return {
+      accessToken: '',
+      refreshToken: '',
+      user: {
+        id: data.id,
+        email: data.email,
+        fullName: data.username,
+        role: (data.role || 'user').toLowerCase(),
+        createdAt: data.created_at,
+      }
+    };
+  },
+
   logout: async (): Promise<void> => {
     await api.post('/auth/logout');
   },

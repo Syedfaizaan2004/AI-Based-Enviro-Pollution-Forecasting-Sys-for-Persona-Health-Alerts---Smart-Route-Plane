@@ -13,7 +13,7 @@ export const SmartCommuteSnapshot = () => {
           <h3 className="text-sm font-semibold tracking-wider uppercase text-foreground mb-1">Smart Commute</h3>
           <p className="text-xs text-muted-foreground">Default Route Status</p>
         </div>
-        <div className="p-2.5 rounded-lg border border-sky-500/20 bg-sky-500/10 text-sky-400 shadow-sm">
+        <div className="p-2.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-green-400 shadow-sm">
           <Route className="h-5 w-5" />
         </div>
       </div>

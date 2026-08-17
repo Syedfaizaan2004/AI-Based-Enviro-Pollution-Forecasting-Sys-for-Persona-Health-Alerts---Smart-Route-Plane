@@ -13,9 +13,11 @@ from app.schemas.admin import (
 )
 from app.schemas.notification import NotificationCreate
 from app.services.notification_service import NotificationService
+from app.services.email_service import send_email
 from app.models.user import User
-from app.core.redis import redis_client
+from app.models.enums import UserRole
 import secrets
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter(prefix="/admin", tags=["Admin Operations"], dependencies=[Depends(get_current_admin)])
 
@@ -34,25 +36,34 @@ async def list_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends
     return AdminUserListResponse(total=total, users=user_responses)
 
 @router.post("/users/{user_id}/activate")
-async def activate_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    success = await AdminService.toggle_user_activation(db, user_id, True)
-    if not success:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"message": f"User {user_id} activated"}
+async def activate_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_admin: User = Depends(get_current_admin)):
+    try:
+        success = await AdminService.toggle_user_activation(db, user_id, True, current_admin)
+        if not success:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": f"User {user_id} activated"}
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 @router.post("/users/{user_id}/deactivate")
-async def deactivate_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    success = await AdminService.toggle_user_activation(db, user_id, False)
-    if not success:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"message": f"User {user_id} deactivated"}
+async def deactivate_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_admin: User = Depends(get_current_admin)):
+    try:
+        success = await AdminService.toggle_user_activation(db, user_id, False, current_admin)
+        if not success:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": f"User {user_id} deactivated"}
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 @router.delete("/users/{user_id}")
-async def soft_delete_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    success = await AdminService.delete_user(db, user_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"message": f"User {user_id} soft deleted"}
+async def soft_delete_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_admin: User = Depends(get_current_admin)):
+    try:
+        success = await AdminService.delete_user(db, user_id, current_admin)
+        if not success:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": f"User {user_id} soft deleted"}
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 @router.post("/users/{user_id}/notify")
 async def send_notification(user_id: uuid.UUID, notification: NotificationCreate, db: AsyncSession = Depends(get_db)):
@@ -93,24 +104,61 @@ async def system_status(db: AsyncSession = Depends(get_db)):
     return await AdminService.get_system_status(db)
 
 @router.post("/invites")
-async def create_admin_invite(invite: AdminInviteCreate):
-    if not redis_client:
-        raise HTTPException(status_code=500, detail="Redis is not configured")
+async def create_admin_invite(invite: AdminInviteCreate, db: AsyncSession = Depends(get_db), current_admin: User = Depends(get_current_admin)):
+    if current_admin.role != UserRole.SUPER_ADMIN:
+        raise HTTPException(status_code=403, detail="Only Super Admins can generate invites")
         
     token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=1)
     
-    # Store token with 24 hour expiration (86400 seconds)
     try:
-        await redis_client.setex(f"admin_invite:{token}", 86400, invite.email)
+        await AdminService.create_invitation(db, invite.email, token, current_admin.id, expires_at)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to store invite: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create invite in database: {str(e)}")
+        
+    signup_link = f"http://localhost:5173/signup?invite_token={token}"
+    
+    email_body = f"""
+    <h2>AirGuard Admin Invitation</h2>
+    <p>You have been invited to become an Admin on the AirGuard platform.</p>
+    <p>Please click the link below to create your account. This link will expire in 24 hours.</p>
+    <a href="{signup_link}" style="display:inline-block;padding:10px 20px;background-color:#10b981;color:white;text-decoration:none;border-radius:5px;">Accept Invitation</a>
+    <p>Or copy this URL: {signup_link}</p>
+    """
+    
+    email_sent = await send_email(
+        to_email=invite.email,
+        subject="AirGuard Admin Invitation",
+        body=email_body,
+        is_html=True
+    )
+    
+    if not email_sent:
+        print(f"SMTP error, but invite generated: {signup_link}")
         
     return {
-        "message": "Admin invite generated successfully",
+        "message": "Admin invite generated successfully. Email queued for sending.",
         "email": invite.email,
         "invite_token": token,
-        "invite_link": f"/admin/register?token={token}"
+        "invite_link": signup_link
     }
+
+@router.get("/invites")
+async def get_admin_invites(db: AsyncSession = Depends(get_db), current_admin: User = Depends(get_current_admin)):
+    if current_admin.role != UserRole.SUPER_ADMIN:
+        raise HTTPException(status_code=403, detail="Only Super Admins can view invitations")
+        
+    invites = await AdminService.get_invitations(db)
+    return [
+        {
+            "id": inv.id,
+            "email": inv.email,
+            "status": inv.status,
+            "created_at": inv.created_at,
+            "expires_at": inv.expires_at
+        }
+        for inv in invites
+    ]
 
 @router.get("/analytics", response_model=AdminAnalyticsResponse)
 async def get_analytics(db: AsyncSession = Depends(get_db)):

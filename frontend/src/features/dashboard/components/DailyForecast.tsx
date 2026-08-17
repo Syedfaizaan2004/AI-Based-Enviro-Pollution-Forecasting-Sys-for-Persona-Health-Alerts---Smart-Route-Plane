@@ -31,20 +31,20 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const getWeatherIcon = (description: string) => {
   const desc = description.toLowerCase();
-  if (desc.includes('rain')) return <CloudRain className="w-5 h-5 text-blue-400" />;
-  if (desc.includes('thunderstorm') || desc.includes('storm')) return <CloudLightning className="w-5 h-5 text-indigo-400" />;
+  if (desc.includes('rain')) return <CloudRain className="w-5 h-5 text-emerald-400" />;
+  if (desc.includes('thunderstorm') || desc.includes('storm')) return <CloudLightning className="w-5 h-5 text-emerald-500" />;
   if (desc.includes('cloud')) return <Cloud className="w-5 h-5 text-gray-400" />;
   if (desc.includes('clear') || desc.includes('sun')) return <Sun className="w-5 h-5 text-amber-400" />;
-  if (desc.includes('wind')) return <Wind className="w-5 h-5 text-teal-400" />;
-  return <Moon className="w-5 h-5 text-indigo-300" />; // fallback
+  if (desc.includes('wind')) return <Wind className="w-5 h-5 text-emerald-400" />;
+  return <Moon className="w-5 h-5 text-green-400" />; // fallback
 };
 
 export const DailyForecast = ({ location, className }: { location?: { city: string, lat: number, lon: number }, className?: string }) => {
   
   const { data, isLoading, isError } = useQuery({
     queryKey: ['dailyForecast', location?.lat, location?.lon],
-    queryFn: () => dashboardService.getDailyForecast(location?.lat || 37.7749, location?.lon || -122.4194),
-    enabled: !!location?.lat && !!location?.lon,
+    queryFn: () => dashboardService.getDailyForecast(location!.lat, location!.lon),
+    enabled: typeof location?.lat === 'number' && typeof location?.lon === 'number' && (location.lat !== 0 || location.lon !== 0),
   });
 
   if (isLoading || !data) {
@@ -113,8 +113,8 @@ export const DailyForecast = ({ location, className }: { location?: { city: stri
               <defs>
                 <linearGradient id="colorAqi24" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#ec4899" stopOpacity={0.6} />
-                  <stop offset="40%" stopColor="#8b5cf6" stopOpacity={0.2} />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                  <stop offset="40%" stopColor="#059669" stopOpacity={0.2} />
+                  <stop offset="100%" stopColor="#059669" stopOpacity={0} />
                 </linearGradient>
                 <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                   <feGaussianBlur stdDeviation="4" result="blur" />

@@ -422,7 +422,7 @@ export function Home() {
                   bg: 'bg-primary/10',
                   border: 'border-primary/30',
                 },
-              ].map(({ step, title, desc, icon: Icon, color, bg, border }, i) => (
+              ].map(({ step, title, desc, icon: Icon, color, bg: _bg, border }, i) => (
                 <motion.div key={step} variants={FADE_UP} custom={i} className="relative flex flex-col items-center text-center">
                   {/* step number circle */}
                   <div className={`relative mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 ${border} bg-background shadow-sm`}>

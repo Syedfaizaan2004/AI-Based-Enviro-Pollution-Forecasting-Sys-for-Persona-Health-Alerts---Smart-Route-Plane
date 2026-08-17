@@ -5,7 +5,7 @@ export const PublicRoute = () => {
   const { isAuthenticated, user } = useAuthStore();
 
   if (isAuthenticated) {
-    if (user?.role === 'admin') {
+    if (user?.role === 'admin' || user?.role === 'super_admin') {
       return <Navigate to="/admin" replace />;
     }
     return <Navigate to="/dashboard" replace />;

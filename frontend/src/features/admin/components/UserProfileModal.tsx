@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Activity, Map, Wind, HeartPulse, User, Navigation } from 'lucide-react';
+import { X, Activity, Map, User } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { useUserDetails } from '../hooks/useAdmin';
 
@@ -95,7 +95,7 @@ export function UserProfileModal({ userId, onClose }: UserProfileModalProps) {
                   {/* System Engagement */}
                   <GlassCard className="p-5 bg-muted/10 border-border/30">
                     <div className="flex items-center gap-2 mb-4">
-                      <Map className="h-5 w-5 text-blue-500" />
+                      <Map className="h-5 w-5 text-emerald-500" />
                       <h3 className="font-semibold">Platform Engagement</h3>
                     </div>
                     <div className="space-y-3 text-sm">

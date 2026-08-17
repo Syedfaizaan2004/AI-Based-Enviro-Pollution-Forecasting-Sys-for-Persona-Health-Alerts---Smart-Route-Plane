@@ -36,13 +36,9 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
-env.bak/
-venv.bak/
-.env
-.venv
 build/
-develop-eggs/
 dist/
 downloads/
 eggs/
@@ -58,6 +54,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.env
 
 # Testing / Coverage
 .pytest_cache/
@@ -68,14 +65,22 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# Databases
+# Databases & Dumps
 *.sqlite3
 *.db
 *.sqlite
+dump.rdb
+
+# One-off Scripts & Junk
+backend/test_admin.py
+backend/seed_health_advisories.py
+backend/create_superuser.py
 
 # =========================
 # Node & Frontend (React/Vite)
 # =========================
+# The frontend has its own .gitignore in /frontend/.gitignore, 
+# but ignoring here at root level for safety
 node_modules/
 dist/
 dist-ssr/
@@ -89,7 +94,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.npm
+.npm/
 .eslintcache
 .stylelintcache
 .next/
@@ -99,9 +104,14 @@ out/
 # Machine Learning & Data
 # =========================
 models/
+backend/backend/models/
 *.pkl
 *.h5
 *.cbm
+*.json
+!package.json
+!tsconfig*.json
+!*.oxlintrc.json
 catboost_info/
 .ipynb_checkpoints/
 Notebook/.ipynb_checkpoints/

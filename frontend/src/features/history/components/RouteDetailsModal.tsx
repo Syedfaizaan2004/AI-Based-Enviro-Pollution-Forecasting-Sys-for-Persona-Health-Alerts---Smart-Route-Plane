@@ -175,8 +175,8 @@ export function RouteDetailsModal({ route, isOpen, onClose }: RouteDetailsModalP
               {/* Waypoint Breakdown Bento */}
               {route.waypoints && route.waypoints.length > 0 && (
                 <div className="md:col-span-2 bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl p-6 relative overflow-hidden group shadow-sm transition-all hover:shadow-md hover:bg-card/60 mt-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <h3 className="text-sm font-semibold text-indigo-500 mb-6 uppercase tracking-wider flex items-center gap-2">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <h3 className="text-sm font-semibold text-emerald-600 mb-6 uppercase tracking-wider flex items-center gap-2">
                     <MapPin className="h-4 w-4" /> Waypoint Breakdown
                   </h3>
                   
@@ -199,7 +199,7 @@ export function RouteDetailsModal({ route, isOpen, onClose }: RouteDetailsModalP
                         
                         <div className="grid grid-cols-2 gap-3 mt-auto pt-4 border-t border-border/50">
                           <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-blue-500/10 rounded-md text-blue-500">
+                            <div className="p-1.5 bg-emerald-500/10 rounded-md text-emerald-500">
                               <Thermometer className="h-4 w-4" />
                             </div>
                             <div>

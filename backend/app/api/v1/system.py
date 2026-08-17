@@ -10,7 +10,7 @@ router = APIRouter(prefix="/system", tags=["System Administration"])
 @router.get("/jobs", response_model=SystemJobsResponse)
 async def list_jobs(current_user: dict = Depends(get_current_user)):
     # Simulating admin check
-    if getattr(current_user, "role", None) != "admin":
+    if getattr(current_user, "role", None) not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Admin authorization required")
         
     scheduler = get_scheduler()
@@ -25,7 +25,7 @@ async def list_jobs(current_user: dict = Depends(get_current_user)):
 
 @router.post("/jobs/run/{job_id}", response_model=CacheOperationResponse)
 async def run_job_manually(job_id: str, current_user: dict = Depends(get_current_user)):
-    if getattr(current_user, "role", None) != "admin":
+    if getattr(current_user, "role", None) not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Admin authorization required")
         
     scheduler = get_scheduler()
@@ -44,7 +44,7 @@ async def run_job_manually(job_id: str, current_user: dict = Depends(get_current
 
 @router.post("/cache/refresh", response_model=CacheOperationResponse)
 async def refresh_cache(req: CacheRefreshRequest, current_user: dict = Depends(get_current_user)):
-    if getattr(current_user, "role", None) != "admin":
+    if getattr(current_user, "role", None) not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Admin authorization required")
         
     cleared_count = await CacheManager.clear_namespace(req.namespace)
@@ -55,7 +55,7 @@ async def refresh_cache(req: CacheRefreshRequest, current_user: dict = Depends(g
 
 @router.delete("/cache/clear", response_model=CacheOperationResponse)
 async def clear_cache(req: CacheRefreshRequest, current_user: dict = Depends(get_current_user)):
-    if getattr(current_user, "role", None) != "admin":
+    if getattr(current_user, "role", None) not in ["admin", "super_admin"]:
         raise HTTPException(status_code=403, detail="Admin authorization required")
         
     cleared_count = await CacheManager.clear_namespace(req.namespace)

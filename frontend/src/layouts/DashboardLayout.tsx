@@ -108,17 +108,35 @@ export function DashboardLayout() {
   };
 
   const NavContent = () => (
-    <div className="flex flex-col h-full backdrop-blur-3xl border-r border-white/10 shadow-2xl transition-all duration-500" style={{background: 'linear-gradient(180deg, rgba(5,150,105,0.05) 0%, rgba(8,145,178,0.15) 100%), rgba(5,25,40,0.5)'}}>
+    <div
+      className="flex flex-col h-full border-r shadow-2xl transition-all duration-500"
+      style={{
+        background: 'linear-gradient(180deg, #03100a 0%, #051a0c 60%, #071e0d 100%)',
+        borderColor: 'rgba(5,150,105,0.25)',
+      }}
+    >
       {/* Logo */}
-      <Link to="/" className="h-16 flex items-center px-6 border-b border-white/5 font-bold text-lg tracking-tight gap-2.5 shrink-0 transition-colors" style={{color:'#34d399'}}>
-        <Leaf className="h-5 w-5" />
+      <Link
+        to="/"
+        className="h-16 flex items-center px-6 font-bold text-lg tracking-tight gap-2.5 shrink-0"
+        style={{
+          color: '#4ade80',
+          borderBottom: '1px solid rgba(5,150,105,0.20)',
+        }}
+      >
+        <Leaf className="h-5 w-5" style={{color:'#34d399'}} />
         AirSense.AI
       </Link>
 
-      <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1.5">
-        <div className="text-xs font-semibold uppercase tracking-wider px-3 mb-3" style={{color:'rgba(255,255,255,0.7)'}}>
+      <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+        {/* Section label */}
+        <div
+          className="text-xs font-bold uppercase tracking-widest px-3 mb-4"
+          style={{color:'#86efac'}} /* bright-green, very readable */
+        >
           {t('Overview')}
         </div>
+
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname.startsWith(item.path);
@@ -133,30 +151,56 @@ export function DashboardLayout() {
                   }
                   setSidebarOpen(false);
                 }}
-                className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 group shadow-sm hover:shadow-md"
+                className="relative flex items-center px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 group overflow-hidden"
                 style={isActive
-                  ? {background:'linear-gradient(135deg,#059669,#0891b2)', color:'#ffffff', boxShadow:'0 4px 12px rgba(5,150,105,0.3)', border:'1px solid rgba(255,255,255,0.1)'}
-                  : {color:'#e2e8f0', border:'1px solid transparent'}
+                  ? {
+                      background: 'rgba(2,60,30,0.95)',          /* very dark green active */
+                      color: '#ffffff',
+                      boxShadow: '0 0 0 1px rgba(5,150,105,0.45), 0 4px 14px rgba(5,150,105,0.25)',
+                      border: '1px solid rgba(5,150,105,0.45)',
+                    }
+                  : {
+                      color: '#d1fae5',                          /* bright mint — always visible */
+                      border: '1px solid transparent',
+                      background: 'transparent',
+                    }
                 }
               >
-                <Icon className="h-4 w-4 mr-3 shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" style={isActive ? {color:'#ffffff'} : {color:'#6ee7b7'}} />
+                {/* Active left-bar accent */}
+                {isActive && (
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full"
+                    style={{background:'#34d399'}}
+                  />
+                )}
+                <Icon
+                  className="h-4 w-4 mr-3 shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  style={isActive ? {color:'#6ee7b7'} : {color:'#4ade80'}}
+                />
                 <span>{t(item.label)}</span>
               </NavLink>
             </motion.div>
           );
         })}
 
-        {user?.role === 'admin' && (
-          <div className="pt-6 mt-6 border-t border-white/5 space-y-1.5">
-            <div className="text-xs font-semibold uppercase tracking-wider px-3 mb-3" style={{color:'rgba(255,255,255,0.7)'}}>
+        {/* Admin section */}
+        {(user?.role === 'admin' || user?.role === 'super_admin') && (
+          <div
+            className="pt-5 mt-5 space-y-1"
+            style={{borderTop:'1px solid rgba(5,150,105,0.18)'}}
+          >
+            <div
+              className="text-xs font-bold uppercase tracking-widest px-3 mb-3"
+              style={{color:'#fca5a5'}} /* red-300 — clearly signals admin */
+            >
               {t('Administration')}
             </div>
             <NavLink
               to="/admin"
-              className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group"
+              className="flex items-center px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 group"
               style={({isActive}) => isActive
-                ? {background:'rgba(239,68,68,0.15)', color:'#f87171'}
-                : {color:'#e2e8f0'}
+                ? {background:'rgba(80,10,10,0.80)', color:'#fca5a5', border:'1px solid rgba(239,68,68,0.40)'}
+                : {color:'#fca5a5', border:'1px solid transparent'}
               }
             >
               <ShieldAlert className="h-4 w-4 mr-3 shrink-0" style={{color:'#f87171'}} />
@@ -167,30 +211,33 @@ export function DashboardLayout() {
       </div>
 
       {/* User profile + sign out */}
-      <div className="p-4 border-t border-white/5" style={{background:'rgba(0,0,0,0.2)'}}>
+      <div
+        className="p-4 space-y-1"
+        style={{borderTop:'1px solid rgba(5,150,105,0.20)', background:'rgba(0,0,0,0.35)'}}
+      >
         <button
           onClick={() => { navigate('/profile'); setSidebarOpen(false); }}
-          className="w-full flex items-center text-left gap-3 mb-4 px-2 py-2 -mx-2 rounded-lg transition-colors cursor-pointer group"
+          className="w-full flex items-center text-left gap-3 mb-3 px-2 py-2 -mx-2 rounded-lg transition-colors cursor-pointer"
           style={{background:'transparent'}}
-          onMouseEnter={e => (e.currentTarget.style.background='rgba(255,255,255,0.05)')}
+          onMouseEnter={e => (e.currentTarget.style.background='rgba(5,150,105,0.12)')}
           onMouseLeave={e => (e.currentTarget.style.background='transparent')}
         >
-          <div className="h-9 w-9 rounded-full p-[1px] shadow-sm" style={{background:'linear-gradient(135deg,#059669,#0891b2)'}}>
-            <div className="h-full w-full rounded-full flex items-center justify-center" style={{background:'#0a1628'}}>
-              <span className="text-xs font-bold" style={{color:'#34d399'}}>{user?.fullName?.charAt(0) || 'U'}</span>
+          <div className="h-9 w-9 rounded-full p-[1px] shadow-sm" style={{background:'linear-gradient(135deg,#059669,#10b981)'}}>
+            <div className="h-full w-full rounded-full flex items-center justify-center" style={{background:'#071a0e'}}>
+              <span className="text-xs font-bold" style={{color:'#4ade80'}}>{user?.fullName?.charAt(0) || 'U'}</span>
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate" style={{color:'#f0f9ff'}}>{user?.fullName || 'User'}</p>
-            <p className="text-xs truncate" style={{color:'#cbd5e1'}}>{user?.email || 'user@example.com'}</p>
+            <p className="text-sm font-bold truncate" style={{color:'#f0fdf4'}}>{user?.fullName || 'User'}</p>
+            <p className="text-xs truncate" style={{color:'#86efac'}}>{user?.email || 'user@example.com'}</p>
           </div>
         </button>
         <button
           onClick={() => void handleLogout()}
-          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group"
-          style={{color:'#cbd5e1'}}
-          onMouseEnter={e => { e.currentTarget.style.background='rgba(239,68,68,0.12)'; e.currentTarget.style.color='#f87171'; }}
-          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#cbd5e1'; }}
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+          style={{color:'#fca5a5'}}
+          onMouseEnter={e => { e.currentTarget.style.background='rgba(239,68,68,0.15)'; e.currentTarget.style.color='#f87171'; }}
+          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#fca5a5'; }}
         >
           <LogOut className="h-4 w-4" style={{color:'inherit'}} />
           {t('Sign out')}

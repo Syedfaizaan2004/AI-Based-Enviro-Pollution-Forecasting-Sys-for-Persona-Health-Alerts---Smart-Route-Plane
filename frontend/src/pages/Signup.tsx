@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Loader2, Leaf, CheckCircle2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -21,6 +21,8 @@ export const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get('invite_token');
   const setSession = useAuthStore((state) => state.setSession);
 
   const {
@@ -37,7 +39,7 @@ export const Signup = () => {
   const completeGoogleSignup = (res: AuthResponse) => {
     setSession(res.accessToken, res.refreshToken, res.user);
     toast.success('Welcome to AirSense.AI!');
-    if (res.user.role === 'admin') {
+    if (res.user.role === 'admin' || res.user.role === 'super_admin') {
       navigate('/admin');
     } else {
       navigate('/dashboard');
@@ -46,8 +48,13 @@ export const Signup = () => {
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
-      await authService.signup(data);
-      toast.success('Account created! Please sign in.');
+      if (inviteToken) {
+        await authService.adminSignup(data, inviteToken);
+        toast.success('Admin account created! Please sign in.');
+      } else {
+        await authService.signup(data);
+        toast.success('Account created! Please sign in.');
+      }
       navigate('/login');
     } catch (error: any) {
       toast.error(getApiErrorMessage(error, 'Failed to create account'));
@@ -103,7 +110,7 @@ export const Signup = () => {
           >
             <h1 className="text-5xl font-bold tracking-tight text-white mb-6 leading-tight">
               Join the <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-400">
                 Green Revolution.
               </span>
             </h1>
@@ -141,9 +148,11 @@ export const Signup = () => {
 
           <GlassCard className="p-8 sm:p-10 shadow-2xl bg-background/80 backdrop-blur-3xl border-border/60 rounded-[2rem]">
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold tracking-tight">Create your account</h2>
+              <h2 className="text-3xl font-bold tracking-tight">
+                {inviteToken ? 'Create Admin Account' : 'Create your account'}
+              </h2>
               <p className="text-sm text-muted-foreground mt-2">
-                Start breathing better today
+                {inviteToken ? 'Join the AirGuard admin team' : 'Start breathing better today'}
               </p>
             </div>
 
@@ -258,18 +267,22 @@ export const Signup = () => {
               </Button>
             </form>
 
-            <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs font-medium text-muted-foreground">or</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
+            {!inviteToken && (
+              <>
+                <div className="my-6 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs font-medium text-muted-foreground">or</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
 
-            <GoogleAuthButton
-              text="signup_with"
-              isLoading={isSubmitting || isGoogleSubmitting}
-              onCredential={handleGoogleCredential}
-              onError={(message) => toast.error(message)}
-            />
+                <GoogleAuthButton
+                  text="signup_with"
+                  isLoading={isSubmitting || isGoogleSubmitting}
+                  onCredential={handleGoogleCredential}
+                  onError={(message) => toast.error(message)}
+                />
+              </>
+            )}
 
             <div className="mt-8 text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>

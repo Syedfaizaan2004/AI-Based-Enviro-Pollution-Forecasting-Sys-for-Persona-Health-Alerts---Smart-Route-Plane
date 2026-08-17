@@ -83,8 +83,8 @@ export function Profile() {
             </div>
           </GlassCard>
 
-          <GlassCard className="p-6 flex flex-col items-center text-center justify-center space-y-3 group hover:border-blue-500/50 transition-colors">
-            <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <GlassCard className="p-6 flex flex-col items-center text-center justify-center space-y-3 group hover:border-emerald-500/50 transition-colors">
+            <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Droplets className="h-6 w-6" />
             </div>
             <div>
@@ -124,10 +124,10 @@ export function Profile() {
                 </div>
                 
                 <div className="flex flex-col items-center text-center p-4 rounded-xl border border-border/50 bg-background/50 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 p-1 mb-3">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-emerald-600 to-green-500 p-1 mb-3">
                     <div className="h-full w-full rounded-full bg-background flex items-center justify-center">
-                      <Shield className="h-6 w-6 text-indigo-500" />
+                      <Shield className="h-6 w-6 text-emerald-600" />
                     </div>
                   </div>
                   <h4 className="font-bold text-foreground">Data Guardian</h4>
@@ -169,8 +169,8 @@ export function Profile() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="h-6 w-6 rounded-full bg-blue-500/20 border-2 border-background ring-2 ring-blue-500 flex items-center justify-center shrink-0 z-10">
-                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  <div className="h-6 w-6 rounded-full bg-emerald-500/20 border-2 border-background ring-2 ring-emerald-500 flex items-center justify-center shrink-0 z-10">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500" />
                   </div>
                   <div className="pt-0.5">
                     <p className="font-semibold text-foreground text-sm">Profile Configured</p>

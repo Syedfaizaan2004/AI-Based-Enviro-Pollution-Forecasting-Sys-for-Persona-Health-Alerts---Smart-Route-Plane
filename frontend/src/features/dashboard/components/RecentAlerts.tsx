@@ -13,7 +13,7 @@ const getSeverityConfig = (severity: string) => {
       return { icon: AlertTriangle, color: 'text-orange-400', bg: 'bg-orange-500/10' };
     case 'info':
     case 'medium':
-      return { icon: Info, color: 'text-sky-400', bg: 'bg-sky-500/10' };
+      return { icon: Info, color: 'text-green-400', bg: 'bg-emerald-500/10' };
     default:
       return { icon: Bell, color: 'text-primary', bg: 'bg-primary/10' };
   }

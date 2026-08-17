@@ -3,24 +3,24 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════
-   AIRGUARD — 4-Color Environmental Design System
+   AIRGUARD — Dark Green & Light Green Environmental Design System
    
-   4 Colors of Nature (always visible on dark background):
-   🌿 Emerald   #059669  — forests, clean air
-   🌊 Cyan      #0891b2  — sky, water, atmosphere
-   🌙 Deep Navy #0a1628  — night sky, depth, trust
-   🌿 Teal      #0d9488  — earth balance, health
+   Green Palette:
+   🌲 Dark Forest  #071a0e  — deepest background
+   🌿 Forest Green #0a2212  — card / panel surfaces
+   🍃 Mid Green    #14532d  — elevated surfaces
+   🌱 Emerald      #059669  — primary brand accent
+   🌾 Light Green  #bbf7d0  — highlights, badges
    
    TEXT PHILOSOPHY:
-   Background is always dark → text is always light.
-   text-foreground      = bright near-white  (#f0f9ff)
-   text-muted-foreground= soft silver-blue   (#94a3b8)
-   Headers use Sora font with gradient (green → cyan)
+   Dark BG  → bright near-white text (#f0fff4 / #dcfce7)
+   Light BG → very dark green text  (#052e16 / #14532d)
+   Headers use Sora font with gradient (emerald → teal)
 ═══════════════════════════════════════════════════════════ */
 
 /* ── Instant background — fires before any JS ─────────────── */
 html {
-  background-color: hsl(var(--background, 222 47% 7%));
+  background-color: hsl(var(--background, 140 60% 6%));
   color-scheme: dark;
   min-height: 100%;
   overscroll-behavior: none;
@@ -32,15 +32,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Always-light text on dark background */
-
-  /* 4-color environmental mesh gradient */
-  background-color: #0a1628;
+  /* Dark forest-green base with emerald/teal mesh gradients */
+  background-color: #071a0e;
   background-image:
-    radial-gradient(ellipse 80% 50% at 10% 10%,  rgba(5, 150, 105, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 90%  5%,  rgba(8, 145, 178, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 60% at 80% 90%,  rgba(13,148, 136, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 50% at  5% 90%,  rgba(6, 182, 212, 0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 10% 10%,  rgba(5, 150, 105, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90%  5%,  rgba(16, 185, 129, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 80% 90%,  rgba(6, 95, 70, 0.18)  0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at  5% 90%,  rgba(20, 83, 45, 0.12)  0%, transparent 60%);
   background-attachment: fixed;
 }
 
@@ -55,90 +53,90 @@ h1, h2, h3, h4, h5, h6 {
 ═══════════════════════════════════════════════════════════ */
 @layer base {
   :root {
-    /* ── Backgrounds ── */
-    --background:  222 47%  7%;   /* #0f172a deep navy   */
-    --card:        222 40%  9%;   /* slightly lighter     */
-    --popover:     222 40% 10%;
-    --muted:       222 35% 14%;
+    /* ── Backgrounds (dark forest-green palette) ── */
+    --background:  140 60%  6%;   /* #071a0e  deep forest green   */
+    --card:        140 55%  9%;   /* #0a2212  slightly lighter     */
+    --popover:     140 50% 11%;
+    --muted:       140 40% 15%;
 
-    /* ── FOREGROUND — always bright & readable ── */
-    --foreground:          210 40% 96%;   /* #f0f9ff  — near white-blue, crisp   */
-    --card-foreground:     210 40% 96%;
-    --popover-foreground:  210 40% 96%;
-    --muted-foreground:    215 25% 85%;   /* Increased brightness for better visibility */
-    --accent-foreground:   210 40% 96%;
+    /* ── FOREGROUND — bright & highly readable on dark green ── */
+    --foreground:          140 60% 96%;   /* #f0fff4  — near white-green, crisp  */
+    --card-foreground:     140 55% 94%;  /* #e6faf0                              */
+    --popover-foreground:  140 60% 96%;
+    --muted-foreground:    140 30% 82%;  /* soft light-green, clearly visible    */
+    --accent-foreground:   140 60% 96%;
 
     /* ── Brand colors ── */
-    --primary:             161 84% 39%;   /* emerald  #10b981  */
+    --primary:             161 84% 42%;   /* emerald  #10b981  */
     --primary-foreground:    0  0% 100%;
-    --secondary:           197 90% 38%;   /* cyan     #0891b2  */
+    --secondary:           152 76% 36%;   /* forest   #0d9488  */
     --secondary-foreground:  0  0% 100%;
-    --accent:              222 35% 16%;
+    --accent:              140 40% 16%;
 
     /* ── Semantic ── */
     --destructive:           4 86% 58%;
     --destructive-foreground: 0  0% 100%;
-    --border:              222 30% 20%;
-    --input:               222 30% 20%;
-    --ring:                161 84% 39%;
+    --border:              140 35% 22%;
+    --input:               140 35% 22%;
+    --ring:                161 84% 42%;
     --radius:              0.85rem;
 
     /* ── Glass ── */
-    --glass-bg:     rgba(10, 22, 40, 0.60);
-    --glass-border: rgba(5, 150, 105, 0.18);
+    --glass-bg:     rgba(7, 26, 14, 0.65);
+    --glass-border: rgba(5, 150, 105, 0.25);
   }
 
-  /* Dark class applies same values (no white flash on toggle) */
+  /* Dark class mirrors :root (no white flash on toggle) */
   .dark {
-    --background:  222 47%  7%;
-    --card:        222 40%  9%;
-    --popover:     222 40% 10%;
-    --muted:       222 35% 14%;
-    --foreground:          210 40% 96%;
-    --card-foreground:     210 40% 96%;
-    --popover-foreground:  210 40% 96%;
-    --muted-foreground:    215 25% 85%;   /* Increased brightness */
-    --accent-foreground:   210 40% 96%;
-    --primary:             161 84% 39%;
+    --background:  140 60%  6%;
+    --card:        140 55%  9%;
+    --popover:     140 50% 11%;
+    --muted:       140 40% 15%;
+    --foreground:          140 60% 96%;
+    --card-foreground:     140 55% 94%;
+    --popover-foreground:  140 60% 96%;
+    --muted-foreground:    140 30% 82%;
+    --accent-foreground:   140 60% 96%;
+    --primary:             161 84% 42%;
     --primary-foreground:    0  0% 100%;
-    --secondary:           197 90% 38%;
+    --secondary:           152 76% 36%;
     --secondary-foreground:  0  0% 100%;
-    --accent:              222 35% 16%;
+    --accent:              140 40% 16%;
     --destructive:           4 86% 55%;
     --destructive-foreground: 0  0% 100%;
-    --border:              222 30% 20%;
-    --input:               222 30% 20%;
-    --ring:                161 84% 39%;
-    --glass-bg:     rgba(10, 22, 40, 0.60);
-    --glass-border: rgba(5, 150, 105, 0.18);
+    --border:              140 35% 22%;
+    --input:               140 35% 22%;
+    --ring:                161 84% 42%;
+    --glass-bg:     rgba(7, 26, 14, 0.65);
+    --glass-border: rgba(5, 150, 105, 0.25);
   }
 
-  /* Light mode overrides (env-themed soft sky colours) */
+  /* Light mode overrides (bright mint-green palette) */
   :root:not(.dark) {
-    --background:  168 60% 97%;
+    --background:  140 70% 96%;   /* #edfbf3 bright mint            */
     --card:          0  0% 100%;
     --popover:       0  0% 100%;
-    --muted:       168 30% 91%;
-    --foreground:          222 47%  8%;   /* dark navy text on light bg  */
-    --card-foreground:     222 47%  8%;
-    --popover-foreground:  222 47%  8%;
-    --muted-foreground:    220 15% 20%;   /* Darker for better readability */
-    --accent-foreground:   222 47%  8%;
-    --accent:              168 30% 86%;
-    --border:              168 25% 80%;
-    --input:               168 25% 84%;
-    --glass-bg:     rgba(255,255,255,0.60);
-    --glass-border: rgba(5,150,105,0.20);
+    --muted:       140 45% 88%;   /* #c6f0d8 soft green tint        */
+    --foreground:          140 90% 10%;   /* #052e16  very dark forest — max contrast */
+    --card-foreground:     140 90% 10%;
+    --popover-foreground:  140 90% 10%;
+    --muted-foreground:    140 50% 20%;   /* #14532d — dark green, clearly readable  */
+    --accent-foreground:   140 90% 10%;
+    --accent:              140 40% 83%;
+    --border:              140 35% 72%;
+    --input:               140 35% 76%;
+    --glass-bg:     rgba(237, 251, 243, 0.70);
+    --glass-border: rgba(5, 150, 105, 0.28);
   }
 
-  /* Light mode — keep body text dark on light background */
+  /* Light mode body — bright mint-green mesh background */
   :root:not(.dark) body {
-    background-color: #e8f5f0;
+    background-color: #d4f5e2;
     background-image:
-      radial-gradient(ellipse 70% 50% at 10% 10%, rgba(5,150,105,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 60% at 90%  5%, rgba(8,145,178,0.05) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 60% at 80% 90%, rgba(13,148,136,0.04) 0%, transparent 55%),
-      radial-gradient(ellipse 80% 50% at  5% 90%, rgba(6,182,212,0.03) 0%, transparent 60%);
+      radial-gradient(ellipse 70% 50% at 10% 10%, rgba(5,150,105,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 90%  5%, rgba(16,185,129,0.09) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 80% 90%, rgba(13,148,136,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 50% at  5% 90%, rgba(6, 95, 70, 0.06)  0%, transparent 60%);
   }
 
   /* Accent overrides */
@@ -177,9 +175,9 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 0 0 1px rgba(5,150,105,0.25), 0 8px 32px rgba(5,150,105,0.12), 0 16px 48px rgba(0,0,0,0.25);
   }
 
-  /* Gradient text — green → cyan */
+  /* Gradient text — emerald → light-green */
   .text-gradient {
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    background: linear-gradient(135deg, #10b981 0%, #4ade80 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -248,3 +246,59 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-track   { background: transparent; }
 ::-webkit-scrollbar-thumb   { background: rgba(5,150,105,0.40); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(5,150,105,0.65); }
+
+/* ═══════════════════════════════════════════════════════════
+   Leaflet Map Customizations (Glassmorphism Popups)
+═══════════════════════════════════════════════════════════ */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+  color: var(--foreground) !important;
+  border-radius: 16px !important;
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 4px;
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px;
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+.leaflet-popup-tip-container {
+  overflow: visible !important;
+}
+
+.leaflet-popup-tip {
+  border-top: none !important;
+  border-left: none !important;
+  box-shadow: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin: -8px auto 0 !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--muted-foreground) !important;
+  padding: 6px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--foreground) !important;
+  background: transparent !important;
+}
+
+/* Custom tooltip/popup class for specific styling */
+.leaflet-popup-green .leaflet-popup-content-wrapper,
+.leaflet-popup-green .leaflet-popup-tip {
+  background: rgba(10, 34, 18, 0.85) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}

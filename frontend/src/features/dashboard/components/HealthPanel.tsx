@@ -93,7 +93,7 @@ export const HealthPanel = ({ data }: { data: DashboardSummaryResponse }) => {
       {/* Guidance Section */}
       <div className="space-y-3">
         <div className="flex items-start gap-3.5 p-4 rounded-xl bg-background/40 border border-border/30 hover:border-border/60 transition-colors">
-          <div className="p-2 rounded-lg bg-sky-500/10 text-sky-500 shrink-0">
+          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 shrink-0">
             <Wind className="h-4 w-4" />
           </div>
           <div className="text-sm pt-0.5">

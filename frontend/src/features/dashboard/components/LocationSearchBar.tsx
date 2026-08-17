@@ -37,19 +37,19 @@ export const LocationSearchBar = ({ onLocationSelect }: LocationSearchBarProps) 
             setQuery(cityName);
           } catch (e) {
             console.error('Failed to reverse geocode', e);
-            onLocationSelect('San Francisco', 37.7749, -122.4194);
+            // Don't default to a hardcoded city — let user type manually
           } finally {
             setIsLocating(false);
           }
         },
         (error) => {
+          // Geolocation denied or unavailable — let user search manually
           console.warn('Geolocation denied or failed', error);
-          onLocationSelect('San Francisco', 37.7749, -122.4194);
           setIsLocating(false);
         }
       );
     } else {
-      onLocationSelect('San Francisco', 37.7749, -122.4194);
+      // Geolocation not supported — let user search manually
       setIsLocating(false);
     }
   };

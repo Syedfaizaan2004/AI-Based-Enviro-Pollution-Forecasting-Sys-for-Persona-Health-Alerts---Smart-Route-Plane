@@ -58,6 +58,14 @@ export function useInviteAdmin() {
   });
 }
 
+export function useAdminInvites() {
+  return useQuery({
+    queryKey: ['adminInvites'],
+    queryFn: () => adminService.getAdminInvites(),
+    refetchInterval: 30000,
+  });
+}
+
 export function useSendNotification() {
   const queryClient = useQueryClient();
   return useMutation({

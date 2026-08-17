@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, HardDrive, Terminal, Bell,
-  FileText, User as UserIcon, LogOut, ShieldAlert, Menu, X,
+  FileText, User as UserIcon, LogOut, ShieldAlert, Menu,
   ChevronRight, MessageSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -22,7 +22,7 @@ type AdminTab = 'overview' | 'profile' | 'users' | 'system' | 'logs' | 'notifica
 const tabs = [
   { id: 'overview',       label: 'Dashboard',         icon: LayoutDashboard, color: '#059669' }, /* Emerald */
   { id: 'profile',        label: 'Admin Profile',      icon: UserIcon,        color: '#0d9488' }, /* Teal */
-  { id: 'users',          label: 'User Management',    icon: Users,           color: '#0891b2' }, /* Cyan */
+  { id: 'users',          label: 'User Management',    icon: Users,           color: '#059669' }, /* Emerald */
   { id: 'cms',            label: 'Health Advisories',  icon: FileText,        color: '#84cc16' }, /* Leaf Green */
   { id: 'system',         label: 'System & Cache',     icon: HardDrive,       color: '#14b8a6' }, /* Light Teal */
   { id: 'logs',           label: 'System Logs',        icon: Terminal,        color: '#475569' }, /* Slate/Stone */
@@ -58,7 +58,7 @@ export function Admin() {
   };
   const activeTabInfo = tabs.find(t => t.id === activeTab)!;
 
-  if (!user || user.role !== 'admin') {
+  if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
     return (
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-6 bg-background/50 backdrop-blur-sm rounded-3xl">
         <div className="p-5 rounded-full bg-destructive/15">
@@ -214,22 +214,33 @@ function Sidebar({
   user: { fullName?: string; email?: string } | null;
 }) {
   return (
-    <div className="flex flex-col w-full h-full border-r border-border/50 transition-all duration-500 bg-card/60 backdrop-blur-2xl shadow-xl">
-
+    <div
+      className="flex flex-col w-full h-full border-r shadow-2xl transition-all duration-500"
+      style={{
+        background: 'linear-gradient(180deg, #03100a 0%, #051a0c 60%, #071e0d 100%)',
+        borderColor: 'rgba(5,150,105,0.25)',
+      }}
+    >
       {/* Logo */}
-      <div className="h-16 flex items-center gap-3 px-6 border-b border-border/50 flex-shrink-0">
-        <div className="p-1.5 rounded-lg bg-primary/10">
-          <ShieldAlert className="h-5 w-5 text-primary" />
+      <div
+        className="h-16 flex items-center gap-3 px-6 flex-shrink-0"
+        style={{borderBottom:'1px solid rgba(5,150,105,0.20)'}}
+      >
+        <div className="p-1.5 rounded-lg" style={{background:'rgba(5,150,105,0.20)'}}>
+          <ShieldAlert className="h-5 w-5" style={{color:'#4ade80'}} />
         </div>
         <div>
-          <div className="font-bold text-base leading-tight text-foreground">AirSense.AI</div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-primary">Admin Panel</div>
+          <div className="font-bold text-base leading-tight" style={{color:'#f0fdf4'}}>AirSense.AI</div>
+          <div className="text-[10px] font-bold uppercase tracking-widest" style={{color:'#4ade80'}}>Admin Panel</div>
         </div>
       </div>
 
       {/* Nav items */}
       <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-        <div className="text-[10px] font-bold uppercase tracking-widest px-3 pb-2 text-foreground/90">
+        <div
+          className="text-[10px] font-bold uppercase tracking-widest px-3 pb-3"
+          style={{color:'#86efac'}} /* bright-green — always readable */
+        >
           Navigation
         </div>
         {tabs.map((tab) => {
@@ -239,21 +250,43 @@ function Sidebar({
             <motion.div key={tab.id} whileHover={{ x: 4, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
               <button
                 onClick={() => onSelect(tab.id)}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-left group overflow-hidden ${
-                  isActive 
-                    ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm' 
-                    : 'text-foreground/90 hover:bg-muted/50 hover:text-foreground border border-transparent'
-                }`}
+                className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 text-left group overflow-hidden"
+                style={isActive
+                  ? {
+                      background: 'rgba(2,60,30,0.95)',           /* very dark green — strong contrast */
+                      color: '#ffffff',
+                      boxShadow: '0 0 0 1px rgba(5,150,105,0.50), 0 4px 14px rgba(5,150,105,0.25)',
+                      border: '1px solid rgba(5,150,105,0.50)',
+                    }
+                  : {
+                      color: '#d1fae5',                            /* bright mint — always visible */
+                      border: '1px solid transparent',
+                      background: 'transparent',
+                    }
+                }
               >
+                {/* Active left-bar accent */}
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-7 rounded-r-full"
+                    style={{background: tab.color}}
+                  />
                 )}
-                <div className={`p-1.5 rounded-lg flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${
-                  isActive ? 'bg-primary/20' : 'bg-muted'
-                }`}>
-                  <Icon className="h-4 w-4" style={{color: isActive ? tab.color : 'currentColor'}} />
+
+                <div
+                  className="p-1.5 rounded-lg flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  style={{
+                    background: isActive ? 'rgba(5,150,105,0.25)' : 'rgba(5,150,105,0.12)',
+                  }}
+                >
+                  <Icon
+                    className="h-4 w-4"
+                    style={{color: isActive ? tab.color : '#4ade80'}}
+                  />
                 </div>
+
                 <span className="flex-1 truncate">{tab.label}</span>
+
                 {isActive && (
                   <motion.div
                     layoutId="adminActiveIndicator"
@@ -269,21 +302,33 @@ function Sidebar({
       </div>
 
       {/* Footer — user info + logout */}
-      <div className="flex-shrink-0 p-3 border-t border-border/50 space-y-1 bg-muted/20">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-background/50 border border-border/30">
-          <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 bg-primary/20 text-primary">
+      <div
+        className="flex-shrink-0 p-3 space-y-1"
+        style={{borderTop:'1px solid rgba(5,150,105,0.20)', background:'rgba(0,0,0,0.35)'}}
+      >
+        <div
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1"
+          style={{background:'rgba(5,150,105,0.10)', border:'1px solid rgba(5,150,105,0.20)'}}
+        >
+          <div
+            className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+            style={{background:'rgba(5,150,105,0.25)', color:'#4ade80'}}
+          >
             {user?.fullName?.charAt(0) || 'A'}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold truncate text-foreground">{user?.fullName || 'Admin'}</div>
-            <div className="text-xs truncate text-foreground/90">{user?.email || ''}</div>
+            <div className="text-sm font-bold truncate" style={{color:'#f0fdf4'}}>{user?.fullName || 'Admin'}</div>
+            <div className="text-xs truncate" style={{color:'#86efac'}}>{user?.email || ''}</div>
           </div>
         </div>
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-foreground/90 hover:bg-destructive/10 hover:text-destructive"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
+          style={{color:'#fca5a5'}}
+          onMouseEnter={e => { e.currentTarget.style.background='rgba(239,68,68,0.15)'; e.currentTarget.style.color='#f87171'; }}
+          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#fca5a5'; }}
         >
-          <LogOut className="h-4 w-4 flex-shrink-0" />
+          <LogOut className="h-4 w-4 flex-shrink-0" style={{color:'inherit'}} />
           Sign Out
         </button>
       </div>

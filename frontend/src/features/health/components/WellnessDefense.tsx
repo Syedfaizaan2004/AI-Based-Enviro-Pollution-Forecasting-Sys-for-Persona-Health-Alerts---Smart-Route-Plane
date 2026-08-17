@@ -10,21 +10,21 @@ export const WellnessDefense = ({ aqi }: WellnessDefenseProps) => {
   const getTips = () => {
     if (aqi > 150) {
       return [
-        { icon: <Droplets className="w-4 h-4 text-blue-500" />, text: "Drink 3L of water to flush toxins" },
+        { icon: <Droplets className="w-4 h-4 text-emerald-500" />, text: "Drink 3L of water to flush toxins" },
         { icon: <Apple className="w-4 h-4 text-emerald-500" />, text: "Eat Vitamin C & E (Citrus, Almonds)" },
-        { icon: <ShieldPlus className="w-4 h-4 text-indigo-500" />, text: "Take Omega-3 supplements today" }
+        { icon: <ShieldPlus className="w-4 h-4 text-emerald-600" />, text: "Take Omega-3 supplements today" }
       ];
     } else if (aqi > 100) {
       return [
-        { icon: <Droplets className="w-4 h-4 text-blue-500" />, text: "Stay well hydrated (2.5L+)" },
+        { icon: <Droplets className="w-4 h-4 text-emerald-500" />, text: "Stay well hydrated (2.5L+)" },
         { icon: <Apple className="w-4 h-4 text-emerald-500" />, text: "Antioxidant-rich lunch recommended" },
-        { icon: <ShieldPlus className="w-4 h-4 text-indigo-500" />, text: "Wash face after commuting" }
+        { icon: <ShieldPlus className="w-4 h-4 text-emerald-600" />, text: "Wash face after commuting" }
       ];
     } else {
       return [
-        { icon: <Droplets className="w-4 h-4 text-blue-500" />, text: "Normal hydration is fine" },
+        { icon: <Droplets className="w-4 h-4 text-emerald-500" />, text: "Normal hydration is fine" },
         { icon: <Apple className="w-4 h-4 text-emerald-500" />, text: "Great day for outdoor digestion walk" },
-        { icon: <ShieldPlus className="w-4 h-4 text-indigo-500" />, text: "Open windows for fresh air ventilation" }
+        { icon: <ShieldPlus className="w-4 h-4 text-emerald-600" />, text: "Open windows for fresh air ventilation" }
       ];
     }
   };

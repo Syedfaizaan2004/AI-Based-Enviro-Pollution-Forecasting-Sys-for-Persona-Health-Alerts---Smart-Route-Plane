@@ -27,7 +27,7 @@ export const RouteCard = ({ route, isSelected, onClick }: RouteCardProps) => {
     }
     if (rank === 1) {
       return (
-        <div className="absolute -top-3 -right-2 bg-gradient-to-r from-primary to-blue-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg shadow-primary/30 border border-white/20 flex items-center gap-1 z-10">
+        <div className="absolute -top-3 -right-2 bg-gradient-to-r from-primary to-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg shadow-primary/30 border border-white/20 flex items-center gap-1 z-10">
           <ShieldCheck className="h-3 w-3" /> Best Choice
         </div>
       );

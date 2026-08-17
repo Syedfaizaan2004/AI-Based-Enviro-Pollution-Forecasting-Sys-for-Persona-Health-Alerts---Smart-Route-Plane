@@ -67,7 +67,7 @@ export const SummaryCards = ({ data }: { data: DashboardSummaryResponse }) => {
       unit: 'index',
       icon: Wind,
       subtitle: avgAqiCategory,
-      color: 'text-sky-400',
+      color: 'text-green-400',
     },
     {
       title: 'Peak AQI',
@@ -99,7 +99,7 @@ export const SummaryCards = ({ data }: { data: DashboardSummaryResponse }) => {
       unit: 'this week',
       icon: BarChart2,
       subtitle: `${cards?.this_month_predictions_count ?? 0} monthly`,
-      color: 'text-violet-400',
+      color: 'text-emerald-500',
     },
     {
       title: 'AI Accuracy',

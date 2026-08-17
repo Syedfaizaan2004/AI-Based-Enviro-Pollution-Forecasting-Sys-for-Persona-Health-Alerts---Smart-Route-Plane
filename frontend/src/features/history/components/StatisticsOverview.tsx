@@ -31,8 +31,8 @@ export function StatisticsOverview() {
       value: Math.round(stats.average_aqi),
       subtitle: "Highest: " + Math.round(stats.highest_aqi),
       icon: Wind,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10"
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10"
     },
     {
       title: "Avg Exposure Score",
@@ -55,8 +55,8 @@ export function StatisticsOverview() {
       value: Math.round(stats.average_travel_time) + "m",
       subtitle: "Per route",
       icon: Activity,
-      color: "text-violet-500",
-      bg: "bg-violet-500/10"
+      color: "text-emerald-600",
+      bg: "bg-emerald-600/10"
     }
   ];
 

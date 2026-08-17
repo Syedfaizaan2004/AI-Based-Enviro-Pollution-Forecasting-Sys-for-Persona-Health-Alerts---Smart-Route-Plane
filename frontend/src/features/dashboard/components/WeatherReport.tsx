@@ -8,16 +8,35 @@ interface WeatherReportProps {
 }
 
 export const WeatherReport = ({ location }: WeatherReportProps) => {
-  const { data: weather, isLoading } = useCurrentWeather(location.lat || undefined, location.lon || undefined);
+  const hasValidLocation =
+    typeof location.lat === 'number' &&
+    typeof location.lon === 'number' &&
+    (location.lat !== 0 || location.lon !== 0);
 
-  // Derived data
-  const currentTemp = weather ? Math.round(weather.temperature) : 24;
-  const condition = weather?.description || 'Partly Cloudy';
-  const humidity = weather ? `${weather.humidity}%` : '65%';
-  const windSpeed = weather ? `${Math.round(weather.wind_speed)} km/h` : '12 km/h';
-  const pressure = weather?.pressure ? `${weather.pressure} hPa` : '1012 hPa';
-  const visibility = weather?.visibility ? `${Math.round(weather.visibility / 1000)} km` : '10 km';
-  const locationName = weather?.location_name || 'San Francisco, CA';
+  const { data: weather, isLoading } = useCurrentWeather(
+    hasValidLocation ? location.lat : undefined,
+    hasValidLocation ? location.lon : undefined,
+  );
+
+  // Derived data — only use real API values, no hardcoded defaults
+  const currentTemp = weather ? Math.round(weather.temperature) : null;
+  const condition = weather?.description ?? null;
+  const humidity = weather ? `${weather.humidity}%` : null;
+  const windSpeed = weather ? `${Math.round(weather.wind_speed)} km/h` : null;
+  const pressure = weather?.pressure ? `${weather.pressure} hPa` : null;
+  const visibility = weather?.visibility ? `${Math.round(weather.visibility / 1000)} km` : null;
+  const locationName = weather?.location_name ?? location.city ?? null;
+
+  if (!hasValidLocation && !weather) {
+    return (
+      <GlassCard className="p-6 h-full min-h-[480px] flex flex-col items-center justify-center gap-3">
+        <Cloud className="w-16 h-16 text-muted-foreground/30" strokeWidth={1} />
+        <p className="text-sm font-medium text-muted-foreground text-center">
+          Search for a city above to see<br />live weather conditions.
+        </p>
+      </GlassCard>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -36,41 +55,43 @@ export const WeatherReport = ({ location }: WeatherReportProps) => {
           <h3 className="text-sm font-semibold tracking-wider uppercase text-foreground mb-1">Local Weather</h3>
           <p className="text-xs text-muted-foreground">Current conditions and forecast</p>
         </div>
-        <div className="rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-500 dark:text-sky-400">
-          {locationName}
-        </div>
+        {locationName && (
+          <div className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-500 dark:text-green-400">
+            {locationName}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col items-center mb-8 mt-2">
         <div className="flex items-center gap-6">
-          <Cloud className="w-20 h-20 text-sky-400 drop-shadow-md" strokeWidth={1.5} />
+          <Cloud className="w-20 h-20 text-green-400 drop-shadow-md" strokeWidth={1.5} />
           <div className="flex flex-col">
             <div className="flex items-start">
-              <span className="text-6xl font-light tracking-tighter">{currentTemp}</span>
-              <span className="text-3xl font-light text-muted-foreground ml-1 mt-1">°C</span>
+              <span className="text-6xl font-light tracking-tighter">{currentTemp ?? '—'}</span>
+              {currentTemp !== null && <span className="text-3xl font-light text-muted-foreground ml-1 mt-1">°C</span>}
             </div>
-            <p className="text-lg font-medium text-foreground tracking-wide mt-1">{condition}</p>
+            <p className="text-lg font-medium text-foreground tracking-wide mt-1">{condition ?? '—'}</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-8">
         <div className="flex items-center gap-3 p-3.5 rounded-xl bg-background/40 border border-border/50 transition-colors hover:bg-background/60">
-          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 dark:text-blue-400">
+          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
             <Droplets className="w-4 h-4" />
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Humidity</p>
-            <p className="text-sm font-semibold mt-0.5">{humidity}</p>
+            <p className="text-sm font-semibold mt-0.5">{humidity ?? '—'}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 p-3.5 rounded-xl bg-background/40 border border-border/50 transition-colors hover:bg-background/60">
-          <div className="p-2 rounded-lg bg-teal-500/10 text-teal-500 dark:text-teal-400">
+          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
             <Wind className="w-4 h-4" />
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Wind</p>
-            <p className="text-sm font-semibold mt-0.5">{windSpeed}</p>
+            <p className="text-sm font-semibold mt-0.5">{windSpeed ?? '—'}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 p-3.5 rounded-xl bg-background/40 border border-border/50 transition-colors hover:bg-background/60">
@@ -79,16 +100,16 @@ export const WeatherReport = ({ location }: WeatherReportProps) => {
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Pressure</p>
-            <p className="text-sm font-semibold mt-0.5">{pressure}</p>
+            <p className="text-sm font-semibold mt-0.5">{pressure ?? '—'}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 p-3.5 rounded-xl bg-background/40 border border-border/50 transition-colors hover:bg-background/60">
-          <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500 dark:text-indigo-400">
+          <div className="p-2 rounded-lg bg-emerald-600/10 text-emerald-600 dark:text-emerald-500">
             <Eye className="w-4 h-4" />
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Visibility</p>
-            <p className="text-sm font-semibold mt-0.5">{visibility}</p>
+            <p className="text-sm font-semibold mt-0.5">{visibility ?? '—'}</p>
           </div>
         </div>
       </div>

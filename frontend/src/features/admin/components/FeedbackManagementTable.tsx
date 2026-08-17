@@ -83,8 +83,8 @@ export function FeedbackManagementTable() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-indigo-500">
+                          <div className="h-8 w-8 rounded-full bg-emerald-600/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-emerald-600">
                               {item.user?.username?.charAt(0).toUpperCase() || 'U'}
                             </span>
                           </div>

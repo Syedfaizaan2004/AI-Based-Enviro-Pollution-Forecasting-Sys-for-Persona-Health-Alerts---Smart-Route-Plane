@@ -111,8 +111,8 @@ export const RouteDetails = ({ route, onSelectRoute, isSelecting }: RouteDetails
             </div>
 
             <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50 border border-border/50">
-              <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
-                <Droplets className="h-4 w-4 text-blue-500" />
+              <div className="h-8 w-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                <Droplets className="h-4 w-4 text-emerald-500" />
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase font-semibold">Rainy</p>
@@ -121,8 +121,8 @@ export const RouteDetails = ({ route, onSelectRoute, isSelecting }: RouteDetails
             </div>
 
             <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50 border border-border/50">
-              <div className="h-8 w-8 rounded-full bg-cyan-500/10 flex items-center justify-center shrink-0">
-                <Droplets className="h-4 w-4 text-cyan-500" />
+              <div className="h-8 w-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                <Droplets className="h-4 w-4 text-emerald-500" />
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase font-semibold">Humidity</p>

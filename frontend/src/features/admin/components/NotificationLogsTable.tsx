@@ -25,7 +25,7 @@ export function NotificationLogsTable() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'health_alert': return <Mail className="h-4 w-4 text-blue-500" />;
+      case 'health_alert': return <Mail className="h-4 w-4 text-emerald-500" />;
       case 'emergency': return <Smartphone className="h-4 w-4 text-emerald-500" />;
       default: return <Bell className="h-4 w-4 text-primary" />;
     }
@@ -43,7 +43,7 @@ export function NotificationLogsTable() {
             <p className="text-sm text-foreground/90 mt-1">Track and monitor all system alerts sent to users.</p>
           </div>
         </div>
-        <Button onClick={() => setShowBroadcast(true)} className="gap-2 bg-indigo-500 hover:bg-indigo-600 text-white">
+        <Button onClick={() => setShowBroadcast(true)} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
           <Megaphone className="h-4 w-4" />
           Broadcast Alert
         </Button>

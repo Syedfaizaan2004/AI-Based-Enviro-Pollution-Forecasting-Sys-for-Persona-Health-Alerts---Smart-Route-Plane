@@ -27,20 +27,20 @@ export const AIHealthCoach = ({ summary, profile }: AIHealthCoachProps) => {
   };
 
   return (
-    <GlassCard className="relative overflow-hidden border border-indigo-500/30 p-6 md:p-8 shadow-2xl shadow-indigo-500/10 group hover:shadow-indigo-500/20 transition-shadow duration-500">
+    <GlassCard className="relative overflow-hidden border border-emerald-600/30 p-6 md:p-8 shadow-2xl shadow-emerald-600/10 group hover:shadow-emerald-600/20 transition-shadow duration-500">
       {/* Animated gradient backgrounds */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent opacity-80" />
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-pulse" />
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-emerald-600/10 to-transparent opacity-80" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-600 animate-pulse" />
       
       {/* Animated glow orb */}
-      <div className="absolute -top-12 -right-12 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700" />
+      <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-600/30 transition-colors duration-700" />
       
       <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-5">
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-3.5 rounded-2xl shrink-0 shadow-lg shadow-indigo-500/25">
+        <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 p-3.5 rounded-2xl shrink-0 shadow-lg shadow-emerald-600/25">
           <Sparkles className="h-7 w-7 text-white" />
         </div>
         <div>
-          <h3 className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1.5">AI Health Coach</h3>
+          <h3 className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-1.5">AI Health Coach</h3>
           <p className="text-sm md:text-lg font-medium leading-relaxed text-foreground/90">
             "{getCoachMessage()}"
           </p>

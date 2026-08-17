@@ -55,7 +55,7 @@ export function ConnectedAppsSettings() {
         {/* Google Fit */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+            <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <Watch className="h-5 w-5" />
             </div>
             <div>
@@ -66,7 +66,7 @@ export function ConnectedAppsSettings() {
           <Button 
             variant={apps.googleFit ? "default" : "outline"}
             onClick={() => setApps(s => ({...s, googleFit: !s.googleFit}))}
-            className={apps.googleFit ? "bg-blue-500 hover:bg-blue-600 text-white" : ""}
+            className={apps.googleFit ? "bg-emerald-500 hover:bg-emerald-600 text-white" : ""}
           >
             {apps.googleFit ? <><CheckCircle2 className="h-4 w-4 mr-2"/> Connected</> : "Connect"}
           </Button>

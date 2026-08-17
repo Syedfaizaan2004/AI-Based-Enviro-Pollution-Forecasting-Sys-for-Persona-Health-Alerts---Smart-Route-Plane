@@ -7,7 +7,7 @@ export interface User {
   city?: string;
   region?: string;
   healthConditions?: string[];
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'super_admin';
   createdAt: string;
 }
 

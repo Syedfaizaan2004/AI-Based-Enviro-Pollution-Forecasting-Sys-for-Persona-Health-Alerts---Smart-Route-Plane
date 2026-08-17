@@ -5,12 +5,12 @@ import L from 'leaflet';
 import type { RecommendedRoute } from '../types/route';
 import { decodePolyline } from '../utils/polyline';
 
-// Fix Leaflet's default icon path issues in React
+// Leaflet icon path fix
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconUrl:       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
 interface RouteMapProps {
@@ -91,39 +91,43 @@ export const RouteMap = ({ routes, selectedRoute, onSelectRoute, isNavigating, u
     : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
 
   const getAQIColor = (aqi: number) => {
-    if (aqi < 0) return '#94a3b8'; // slate-400 for preview
+    if (aqi < 0) return '#16a34a'; // green-600 for preview
     if (aqi <= 50) return '#10b981'; // emerald-500
     if (aqi <= 100) return '#f59e0b'; // amber-500
     if (aqi <= 150) return '#f97316'; // orange-500
     return '#ef4444'; // destructive
   };
 
-  // Decode the google encoded polyline to get the exact road curves
   const renderRouteSegments = (route: RecommendedRoute, isSelected: boolean) => {
     if (!route.polyline) return null;
-    
     try {
       const decodedPath = decodePolyline(route.polyline);
       if (!decodedPath || decodedPath.length === 0) return null;
-      
       const color = getAQIColor(route.scores.average_aqi || 50);
-      
       return (
-        <Polyline
-          key={route.route_id || route.rank}
-          positions={decodedPath}
-          color={color}
-          weight={isSelected ? 6 : 4}
-          opacity={isSelected ? 1 : 0.4}
-          dashArray={route.scores.average_aqi < 0 ? "5, 10" : undefined}
-          eventHandlers={{
-            click: () => onSelectRoute(route)
-          }}
-          className={isSelected && route.scores.average_aqi >= 0 ? 'animate-pulse' : ''}
-        />
+        <Fragment key={route.route_id || route.rank}>
+          {/* Glow layer behind selected route */}
+          {isSelected && (
+            <Polyline
+              positions={decodedPath}
+              color={color}
+              weight={14}
+              opacity={0.15}
+              dashArray={undefined}
+            />
+          )}
+          <Polyline
+            positions={decodedPath}
+            color={color}
+            weight={isSelected ? 5 : 3}
+            opacity={isSelected ? 0.95 : 0.35}
+            dashArray={route.scores.average_aqi < 0 ? '8 10' : undefined}
+            eventHandlers={{ click: () => onSelectRoute(route) }}
+          />
+        </Fragment>
       );
     } catch (e) {
-      console.error("Failed to decode polyline", e);
+      console.error('Failed to decode polyline', e);
       return null;
     }
   };
@@ -131,22 +135,68 @@ export const RouteMap = ({ routes, selectedRoute, onSelectRoute, isNavigating, u
   const createAQIIcon = (aqi: number) => {
     const color = getAQIColor(aqi);
     return L.divIcon({
-      html: `<div style="background-color: ${color}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; border: 2px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);">${Math.round(aqi)}</div>`,
+      html: `<div style="
+        background:${color};
+        color:white;
+        width:32px;height:32px;
+        border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        font-weight:800;font-size:9px;
+        border:2.5px solid white;
+        box-shadow:0 0 12px ${color}80,0 2px 6px rgba(0,0,0,0.4);
+      ">${Math.round(aqi)}</div>`,
       className: '',
-      iconSize: [30, 30],
-      iconAnchor: [15, 15],
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
     });
   };
 
   const createHotspotIcon = (aqi: number) => {
     const color = getAQIColor(aqi);
     return L.divIcon({
-      html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"></div>`,
+      html: `<div style="
+        background:${color};
+        width:14px;height:14px;
+        border-radius:50%;
+        border:2.5px solid white;
+        box-shadow:0 0 8px ${color}80;
+      "></div>`,
       className: '',
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
     });
   };
+
+  // SVG start/end pin markers
+  const createStartIcon = () =>
+    L.divIcon({
+      html: `<div style="position:relative;width:36px;height:44px">
+        <svg viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:44px;filter:drop-shadow(0 4px 12px #10b98180)">
+          <path d="M18 0C8.059 0 0 8.059 0 18c0 13.5 18 26 18 26S36 31.5 36 18C36 8.059 27.941 0 18 0z" fill="#10b981"/>
+          <circle cx="18" cy="18" r="9" fill="white" fill-opacity="0.95"/>
+          <text x="18" y="22" text-anchor="middle" font-size="11" font-weight="900" fill="#10b981">S</text>
+        </svg>
+      </div>`,
+      className: '',
+      iconSize: [36, 44],
+      iconAnchor: [18, 44],
+      popupAnchor: [0, -44],
+    });
+
+  const createEndIcon = () =>
+    L.divIcon({
+      html: `<div style="position:relative;width:36px;height:44px">
+        <svg viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:44px;filter:drop-shadow(0 4px 12px #f8717180)">
+          <path d="M18 0C8.059 0 0 8.059 0 18c0 13.5 18 26 18 26S36 31.5 36 18C36 8.059 27.941 0 18 0z" fill="#f87171"/>
+          <circle cx="18" cy="18" r="9" fill="white" fill-opacity="0.95"/>
+          <text x="18" y="22" text-anchor="middle" font-size="11" font-weight="900" fill="#ef4444">D</text>
+        </svg>
+      </div>`,
+      className: '',
+      iconSize: [36, 44],
+      iconAnchor: [18, 44],
+      popupAnchor: [0, -44],
+    });
 
   const renderMarkers = () => {
     if (!selectedRoute) return null;
@@ -188,19 +238,18 @@ export const RouteMap = ({ routes, selectedRoute, onSelectRoute, isNavigating, u
     ));
   };
 
-  const createBlueDotIcon = () => {
-    return L.divIcon({
+  const createBlueDotIcon = () =>
+    L.divIcon({
       html: `
-        <div class="relative flex h-6 w-6 items-center justify-center">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-4 w-4 bg-blue-500 border-2 border-white shadow-md"></span>
+        <div style="position:relative;display:flex;width:28px;height:28px;align-items:center;justify-content:center">
+          <span style="position:absolute;width:28px;height:28px;border-radius:50%;background:#10b981;opacity:0.35;animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite"></span>
+          <span style="position:relative;width:16px;height:16px;border-radius:50%;background:#10b981;border:3px solid white;box-shadow:0 0 14px #10b98180"></span>
         </div>
       `,
       className: '',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
     });
-  };
 
   return (
     <div className="w-full h-full relative rounded-3xl overflow-hidden border border-border/50 shadow-2xl z-0">
@@ -228,17 +277,23 @@ export const RouteMap = ({ routes, selectedRoute, onSelectRoute, isNavigating, u
         {/* Selected Route on top */}
         {selectedRoute && renderRouteSegments(selectedRoute, true)}
         
-        {/* Source and Destination Markers (using first route) */}
+        {/* Source and Destination Markers */}
         {routes.length > 0 && (
           <>
-            <Marker position={[routes[0].waypoints[0].latitude, routes[0].waypoints[0].longitude]}>
-              <Popup>Start</Popup>
+            <Marker
+              position={[routes[0].waypoints[0].latitude, routes[0].waypoints[0].longitude]}
+              icon={createStartIcon()}
+            >
+              <Popup><div className="font-bold text-emerald-500">🟢 Start</div></Popup>
             </Marker>
-            <Marker position={[
-              routes[0].waypoints[routes[0].waypoints.length - 1].latitude, 
-              routes[0].waypoints[routes[0].waypoints.length - 1].longitude
-            ]}>
-              <Popup>Destination</Popup>
+            <Marker
+              position={[
+                routes[0].waypoints[routes[0].waypoints.length - 1].latitude,
+                routes[0].waypoints[routes[0].waypoints.length - 1].longitude,
+              ]}
+              icon={createEndIcon()}
+            >
+              <Popup><div className="font-bold text-red-500">🔴 Destination</div></Popup>
             </Marker>
           </>
         )}
@@ -252,12 +307,21 @@ export const RouteMap = ({ routes, selectedRoute, onSelectRoute, isNavigating, u
         {renderMarkers()}
       </MapContainer>
       
-      {/* Legend */}
-      <div className="absolute bottom-6 right-6 z-10 bg-background/80 backdrop-blur-md p-3 rounded-2xl border border-border/50 shadow-lg text-xs font-medium space-y-1.5">
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Good (0-50)</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-amber-500" /> Moderate (51-100)</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-orange-500" /> Unhealthy for Sensitive (101-150)</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-destructive" /> Unhealthy (151+)</div>
+      {/* Legend — glassmorphism style */}
+      <div className="absolute bottom-5 right-5 z-10 bg-background/75 backdrop-blur-xl p-4 rounded-2xl border border-white/10 shadow-2xl text-xs font-semibold space-y-2.5">
+        <p className="text-[9px] uppercase tracking-widest text-muted-foreground mb-1 font-bold">Air Quality Index</p>
+        {[
+          { color: 'bg-emerald-500', label: 'Good',              range: '0–50'   },
+          { color: 'bg-yellow-400',  label: 'Moderate',          range: '51–100' },
+          { color: 'bg-orange-500',  label: 'Sensitive Groups',  range: '101–150'},
+          { color: 'bg-red-500',     label: 'Unhealthy',         range: '151+'   },
+        ].map(({ color, label, range }) => (
+          <div key={label} className="flex items-center gap-2.5">
+            <div className={`w-2.5 h-2.5 rounded-full shrink-0 shadow-sm ${color}`} />
+            <span className="text-foreground/80">{label}</span>
+            <span className="ml-auto text-muted-foreground font-normal">{range}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

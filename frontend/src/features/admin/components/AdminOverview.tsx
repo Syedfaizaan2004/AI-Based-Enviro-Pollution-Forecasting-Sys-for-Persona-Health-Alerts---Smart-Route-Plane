@@ -17,8 +17,8 @@ export function AdminOverview() {
       title: 'Total Users',
       value: status.total_users,
       icon: Users,
-      color: 'text-cyan-500',
-      bg: 'bg-cyan-500/10'
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10'
     },
     {
       title: 'Active Users',
@@ -31,8 +31,8 @@ export function AdminOverview() {
       title: 'Total Predictions',
       value: status.total_predictions,
       icon: BrainCircuit,
-      color: 'text-teal-500',
-      bg: 'bg-teal-500/10'
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10'
     },
     {
       title: 'Routes Generated',
@@ -133,8 +133,8 @@ export function AdminOverview() {
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                     </linearGradient>
                     <linearGradient id="colorRoute" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
@@ -146,7 +146,7 @@ export function AdminOverview() {
                   />
                   <Legend />
                   <Area type="monotone" dataKey="predictions" name="Predictions" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorPred)" />
-                  <Area type="monotone" dataKey="routes" name="Routes" stroke="#0ea5e9" fillOpacity={1} fill="url(#colorRoute)" />
+                  <Area type="monotone" dataKey="routes" name="Routes" stroke="#10b981" fillOpacity={1} fill="url(#colorRoute)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

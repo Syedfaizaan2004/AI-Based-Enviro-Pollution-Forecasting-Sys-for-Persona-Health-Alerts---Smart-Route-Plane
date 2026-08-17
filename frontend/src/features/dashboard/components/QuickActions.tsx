@@ -29,8 +29,8 @@ export const QuickActions = () => {
           <Download className="h-5 w-5 text-amber-500 group-hover/btn:scale-110 transition-transform" />
           <span className="text-xs font-semibold">Report</span>
         </Button>
-        <Button onClick={() => navigate('/settings')} className="h-24 flex-col gap-3 group/btn bg-muted/20 border-border/40 hover:border-sky-500/50 hover:bg-sky-500/5" variant="outline">
-          <UserCircle className="h-5 w-5 text-sky-500 group-hover/btn:scale-110 transition-transform" />
+        <Button onClick={() => navigate('/settings')} className="h-24 flex-col gap-3 group/btn bg-muted/20 border-border/40 hover:border-emerald-500/50 hover:bg-emerald-500/5" variant="outline">
+          <UserCircle className="h-5 w-5 text-emerald-500 group-hover/btn:scale-110 transition-transform" />
           <span className="text-xs font-semibold">Profile</span>
         </Button>
       </div>

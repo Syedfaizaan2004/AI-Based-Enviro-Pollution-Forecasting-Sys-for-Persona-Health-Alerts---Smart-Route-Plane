@@ -49,10 +49,10 @@ export const AQITrendChart = ({ location }: { location?: { city: string, lat: nu
     { label: 'PM2.5', value: Math.round(Math.max(0, aqi * 0.95 + 4)), unit: 'µg/m³', color: 'text-rose-400', bg: 'bg-rose-400/10', icon: '☁' },
     { label: 'PM10', value: Math.round(Math.max(0, aqi * 1.1 + 8)), unit: 'µg/m³', color: 'text-orange-400', bg: 'bg-orange-400/10', icon: '🌫' },
     { label: 'NO₂', value: Math.round(Math.max(0, aqi * 0.6 + 8)), unit: 'ppb', color: 'text-amber-400', bg: 'bg-amber-400/10', icon: '⚗' },
-    { label: 'SO₂', value: Math.round(Math.max(0, aqi * 0.4 + 5)), unit: 'ppb', color: 'text-cyan-400', bg: 'bg-cyan-400/10', icon: '💨' },
+    { label: 'SO₂', value: Math.round(Math.max(0, aqi * 0.4 + 5)), unit: 'ppb', color: 'text-green-400', bg: 'bg-green-400/10', icon: '💨' },
     { label: 'O₃', value: Math.round(Math.max(0, aqi * 0.7 + 6)), unit: 'ppb', color: 'text-emerald-400', bg: 'bg-emerald-400/10', icon: '☀' },
-    { label: 'CO', value: Number((Math.max(0, aqi * 0.08 + 0.3)).toFixed(1)), unit: 'ppm', color: 'text-violet-400', bg: 'bg-violet-400/10', icon: '🧪' },
-    { label: 'CO₂', value: Math.round(Math.max(350, 400 + aqi * 1.2)), unit: 'ppm', color: 'text-sky-400', bg: 'bg-sky-400/10', icon: '🌿' },
+    { label: 'CO', value: Number((Math.max(0, aqi * 0.08 + 0.3)).toFixed(1)), unit: 'ppm', color: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: '🧪' },
+    { label: 'CO₂', value: Math.round(Math.max(350, 400 + aqi * 1.2)), unit: 'ppm', color: 'text-green-400', bg: 'bg-green-400/10', icon: '🌿' },
   ];
 
   if (isLoading) {

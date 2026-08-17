@@ -87,7 +87,7 @@ export const dashboardService = {
   },
 
   /** GET /weather/current */
-  getCurrentWeather: async (lat: number = 37.7749, lon: number = -122.4194): Promise<WeatherResponse> => {
+  getCurrentWeather: async (lat: number, lon: number): Promise<WeatherResponse> => {
     const { data } = await api.get<WeatherResponse>(DASHBOARD_ENDPOINTS.WEATHER_CURRENT, {
       params: { latitude: lat, longitude: lon },
     });
@@ -95,7 +95,7 @@ export const dashboardService = {
   },
 
   /** GET /weather/forecast */
-  getDailyForecast: async (lat: number = 37.7749, lon: number = -122.4194): Promise<DailyForecastResponse> => {
+  getDailyForecast: async (lat: number, lon: number): Promise<DailyForecastResponse> => {
     const { data } = await api.get<DailyForecastResponse>(DASHBOARD_ENDPOINTS.WEATHER_FORECAST, {
       params: { latitude: lat, longitude: lon },
     });

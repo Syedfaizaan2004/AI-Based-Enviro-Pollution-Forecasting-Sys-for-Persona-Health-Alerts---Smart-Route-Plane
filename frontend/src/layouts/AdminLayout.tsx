@@ -1,6 +1,4 @@
 import { Outlet } from 'react-router';
-import { LanguageSelector } from '@/components/shared/LanguageSelector';
-import { ThemeToggle } from '@/components/shared/theme-toggle';
 import { ChatBot } from '@/features/chat/components/ChatBot';
 
 export function AdminLayout() {

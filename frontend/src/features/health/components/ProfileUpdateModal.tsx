@@ -44,7 +44,7 @@ export const ProfileUpdateModal = ({ currentProfile }: ProfileUpdateModalProps) 
   return (
     <Dialog open={isProfileModalOpen} onOpenChange={setProfileModalOpen}>
       <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-border/50 shadow-2xl p-0 overflow-hidden rounded-2xl">
-        <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500" />
+        <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-primary to-emerald-500" />
         
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="text-xl font-bold tracking-tight">Update Health Profile</DialogTitle>

@@ -51,7 +51,7 @@ export function PrivacySettings() {
         {/* Export Data */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0 text-indigo-500">
+            <div className="h-10 w-10 rounded-full bg-emerald-600/10 flex items-center justify-center shrink-0 text-emerald-600">
               <Download className="h-5 w-5" />
             </div>
             <div>

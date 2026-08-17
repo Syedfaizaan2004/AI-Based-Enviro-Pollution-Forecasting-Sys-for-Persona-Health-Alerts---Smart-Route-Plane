@@ -39,6 +39,11 @@ export const adminService = {
     return response.data;
   },
 
+  getAdminInvites: async (): Promise<any[]> => {
+    const response = await api.get<any[]>('/admin/invites');
+    return response.data;
+  },
+
   sendNotification: async (userId: string, data: { title: string, message: string, notification_type: string }): Promise<{ message: string }> => {
     const response = await api.post<{ message: string }>(`/admin/users/${userId}/notify`, data);
     return response.data;

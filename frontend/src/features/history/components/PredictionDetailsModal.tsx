@@ -47,7 +47,7 @@ export function PredictionDetailsModal({ prediction, isOpen, onClose }: Predicti
       <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-background/60 backdrop-blur-3xl border-border/50 shadow-2xl">
         {/* Animated Background Glow */}
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="bg-gradient-to-br from-primary/10 to-transparent p-6 border-b border-border/50 relative z-10">
           <DialogHeader>
@@ -92,17 +92,17 @@ export function PredictionDetailsModal({ prediction, isOpen, onClose }: Predicti
                 <span className="font-semibold text-lg">{prediction.temperature.toFixed(1)}°C</span>
               </div>
               <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors group">
-                <Droplets className="h-6 w-6 text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
+                <Droplets className="h-6 w-6 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
                 <span className="text-xs text-muted-foreground">Humidity</span>
                 <span className="font-semibold text-lg">{prediction.humidity.toFixed(0)}%</span>
               </div>
               <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors group">
-                <Wind className="h-6 w-6 text-teal-500 mb-2 group-hover:scale-110 transition-transform" />
+                <Wind className="h-6 w-6 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
                 <span className="text-xs text-muted-foreground">Wind</span>
                 <span className="font-semibold text-lg">{prediction.wind_speed?.toFixed(1) ?? '--'} m/s</span>
               </div>
               <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors group">
-                <Gauge className="h-6 w-6 text-indigo-500 mb-2 group-hover:scale-110 transition-transform" />
+                <Gauge className="h-6 w-6 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" />
                 <span className="text-xs text-muted-foreground">Pressure</span>
                 <span className="font-semibold text-lg">{prediction.pressure?.toFixed(0) ?? '--'} hPa</span>
               </div>

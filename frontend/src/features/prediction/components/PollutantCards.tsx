@@ -7,7 +7,7 @@ export const PollutantCards = ({ data }: { data: PredictionResponse }) => {
     { title: 'PM2.5', value: data.pm25, unit: 'µg/m³', icon: Wind, color: 'text-rose-400', bg: 'bg-rose-400/10' },
     { title: 'PM10', value: data.pm10, unit: 'µg/m³', icon: Wind, color: 'text-orange-400', bg: 'bg-orange-400/10' },
     { title: 'Temperature', value: data.temperature, unit: '°C', icon: ThermometerSun, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-    { title: 'Humidity', value: data.humidity, unit: '%', icon: Droplets, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
+    { title: 'Humidity', value: data.humidity, unit: '%', icon: Droplets, color: 'text-green-400', bg: 'bg-green-400/10' },
   ];
 
   return (

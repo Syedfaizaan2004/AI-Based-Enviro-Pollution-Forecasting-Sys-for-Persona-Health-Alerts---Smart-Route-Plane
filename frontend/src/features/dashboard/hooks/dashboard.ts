@@ -45,21 +45,25 @@ export const useDashboardCharts = (chartType: 'line' | 'bar' | 'area' | 'pie' = 
   });
 };
 
-/** Fetch current weather */
+/** Fetch current weather — only fires when a valid non-zero location is known */
 export const useCurrentWeather = (lat?: number, lon?: number) => {
+  const hasValidLocation = typeof lat === 'number' && typeof lon === 'number' && (lat !== 0 || lon !== 0);
   return useQuery({
     queryKey: ['weather', 'current', lat, lon],
-    queryFn: () => dashboardService.getCurrentWeather(lat, lon),
+    queryFn: () => dashboardService.getCurrentWeather(lat!, lon!),
     staleTime: 5 * 60 * 1000, // 5 mins
+    enabled: hasValidLocation,
   });
 };
 
-/** Fetch live AQI for a city or coordinates */
+/** Fetch live AQI for a city or coordinates — only fires when a valid non-zero location is known */
 export const useLiveAQI = (city?: string, lat?: number, lon?: number) => {
+  const hasValidCity = typeof city === 'string' && city.trim().length > 0;
+  const hasValidGeo = typeof lat === 'number' && typeof lon === 'number' && (lat !== 0 || lon !== 0);
   return useQuery({
     queryKey: ['aqi', 'live', city, lat, lon],
     queryFn: () => dashboardService.getLiveAQI(city, lat, lon),
     staleTime: 2 * 60 * 1000, // 2 mins
-    enabled: !!city || (lat !== undefined && lon !== undefined),
+    enabled: hasValidCity || hasValidGeo,
   });
 };

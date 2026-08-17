@@ -60,15 +60,15 @@ export function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-[#050f2d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-lg bg-[#071a0e] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
           >
             {/* Background Glow */}
-            <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-indigo-500/20 to-transparent opacity-50 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-emerald-600/20 to-transparent opacity-50 pointer-events-none" />
 
             <div className="relative p-6 sm:p-8">
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-xl">
+                  <div className="p-2 bg-emerald-600/20 text-emerald-500 rounded-xl">
                     <MessageSquare className="w-6 h-6" />
                   </div>
                   <h2 className="text-xl font-semibold text-white">Give Feedback</h2>
@@ -87,7 +87,7 @@ export function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as any)}
-                    className="w-full px-4 py-3 bg-[#0a1945] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
+                    className="w-full px-4 py-3 bg-[#071a0e] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all appearance-none"
                   >
                     <option value="general">General</option>
                     <option value="bug">Bug Report</option>
@@ -104,7 +104,7 @@ export function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Brief summary..."
-                    className="w-full px-4 py-3 bg-[#0a1945] border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full px-4 py-3 bg-[#071a0e] border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
                     required
                   />
                 </div>
@@ -116,7 +116,7 @@ export function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell us what you think..."
                     rows={4}
-                    className="w-full px-4 py-3 bg-[#0a1945] border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all resize-none"
+                    className="w-full px-4 py-3 bg-[#071a0e] border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all resize-none"
                     required
                   />
                 </div>
@@ -143,7 +143,7 @@ export function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isPending ? (
                       <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

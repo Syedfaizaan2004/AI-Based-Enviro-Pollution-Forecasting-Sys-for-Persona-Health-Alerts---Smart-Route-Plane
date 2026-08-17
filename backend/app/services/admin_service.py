@@ -10,33 +10,76 @@ from app.models.api_log import ApiLog
 from app.models.exposure import ExposureHistory
 from app.models.health_profile import HealthProfile
 from app.models.health_advisory import HealthAdvisoryTemplate
+from app.models.admin_invitation import AdminInvitation
+from app.models.enums import UserRole, InvitationStatus
 from app.services.health_service import HealthService
 from app.schemas.admin import AdminSystemStatus, AdminHealthAdvisoryTemplateUpdate
 
 class AdminService:
     @staticmethod
     async def get_users_paginated(db: AsyncSession, skip: int = 0, limit: int = 100) -> Tuple[int, List[User]]:
-        count_query = select(func.count(User.id))
+        from app.models.enums import UserRole
+        # Exclude super_admin accounts — they should never appear in any user list
+        base_filter = User.role != UserRole.SUPER_ADMIN if hasattr(UserRole, 'SUPER_ADMIN') else True
+
+        count_query = select(func.count(User.id)).where(User.role != UserRole.SUPER_ADMIN)
         total = await db.scalar(count_query)
-        
-        users_query = select(User).offset(skip).limit(limit).order_by(User.created_at.desc())
+
+        users_query = (
+            select(User)
+            .where(User.role != UserRole.SUPER_ADMIN)
+            .offset(skip)
+            .limit(limit)
+            .order_by(User.created_at.desc())
+        )
         users = (await db.scalars(users_query)).all()
-        
+
         return total, users
 
     @staticmethod
-    async def toggle_user_activation(db: AsyncSession, user_id: uuid.UUID, is_active: bool) -> bool:
-        stmt = update(User).where(User.id == user_id).values(is_active=is_active)
-        result = await db.execute(stmt)
+    async def toggle_user_activation(db: AsyncSession, user_id: uuid.UUID, is_active: bool, current_admin: User) -> bool:
+        target_user = await db.scalar(select(User).where(User.id == user_id))
+        if not target_user:
+            return False
+            
+        if target_user.role == UserRole.ADMIN and current_admin.role != UserRole.SUPER_ADMIN:
+            raise ValueError("Only Super Admins can activate or deactivate other admins.")
+            
+        target_user.is_active = is_active
         await db.commit()
-        return result.rowcount > 0
+        return True
         
     @staticmethod
-    async def delete_user(db: AsyncSession, user_id: uuid.UUID) -> bool:
-        stmt = update(User).where(User.id == user_id).values(is_deleted=True, is_active=False)
-        result = await db.execute(stmt)
+    async def delete_user(db: AsyncSession, user_id: uuid.UUID, current_admin: User) -> bool:
+        target_user = await db.scalar(select(User).where(User.id == user_id))
+        if not target_user:
+            return False
+            
+        if target_user.role == UserRole.ADMIN and current_admin.role != UserRole.SUPER_ADMIN:
+            raise ValueError("Only Super Admins can delete other admins.")
+            
+        target_user.is_deleted = True
+        target_user.is_active = False
         await db.commit()
-        return result.rowcount > 0
+        return True
+
+    @staticmethod
+    async def create_invitation(db: AsyncSession, email: str, token: str, invited_by_id: uuid.UUID, expires_at) -> AdminInvitation:
+        invitation = AdminInvitation(
+            email=email,
+            token=token,
+            invited_by_id=invited_by_id,
+            expires_at=expires_at
+        )
+        db.add(invitation)
+        await db.commit()
+        await db.refresh(invitation)
+        return invitation
+
+    @staticmethod
+    async def get_invitations(db: AsyncSession):
+        query = select(AdminInvitation).order_by(AdminInvitation.created_at.desc())
+        return (await db.scalars(query)).all()
 
     @staticmethod
     async def get_system_status(db: AsyncSession) -> AdminSystemStatus:

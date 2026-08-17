@@ -33,7 +33,7 @@ export const Login = () => {
   const completeLogin = (res: AuthResponse) => {
     setSession(res.accessToken, res.refreshToken, res.user);
     toast.success('Welcome back!');
-    if (res.user.role === 'admin') {
+    if (res.user.role === 'admin' || res.user.role === 'super_admin') {
       navigate('/admin');
     } else {
       navigate('/dashboard');
@@ -87,7 +87,7 @@ export const Login = () => {
           >
             <h1 className="text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 leading-tight drop-shadow-xl">
               Breathe Better, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-400">
                 Live Healthier.
               </span>
             </h1>

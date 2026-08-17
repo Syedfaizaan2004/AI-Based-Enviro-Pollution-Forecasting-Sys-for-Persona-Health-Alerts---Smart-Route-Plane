@@ -8,8 +8,8 @@ export function AppearanceSettings() {
 
   const accents: { id: 'emerald' | 'blue' | 'indigo' | 'rose', color: string }[] = [
     { id: 'emerald', color: 'bg-emerald-500' },
-    { id: 'blue', color: 'bg-blue-500' },
-    { id: 'indigo', color: 'bg-indigo-500' },
+    { id: 'blue', color: 'bg-emerald-500' },
+    { id: 'indigo', color: 'bg-emerald-600' },
     { id: 'rose', color: 'bg-rose-500' },
   ];
 

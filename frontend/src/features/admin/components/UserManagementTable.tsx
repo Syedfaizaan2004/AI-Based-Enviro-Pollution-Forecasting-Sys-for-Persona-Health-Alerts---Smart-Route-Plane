@@ -8,10 +8,12 @@ import {
   useActivateUser, 
   useDeactivateUser, 
   useDeleteUser,
-  useInviteAdmin
+  useInviteAdmin,
+  useAdminInvites
 } from '../hooks/useAdmin';
 import { UserProfileModal } from './UserProfileModal';
 import { SendNotificationModal } from './SendNotificationModal';
+import { useAuthStore } from '@/store/authStore';
 
 export function UserManagementTable() {
   const [page, setPage] = useState(0);
@@ -22,6 +24,9 @@ export function UserManagementTable() {
   const deactivate = useDeactivateUser();
   const remove = useDeleteUser();
   const invite = useInviteAdmin();
+  const { user: currentUser } = useAuthStore();
+  const isSuperAdmin = currentUser?.role === 'super_admin';
+  const invitesQuery = useAdminInvites();
   
   const [inviteEmail, setInviteEmail] = useState('');
   const [showInvite, setShowInvite] = useState(false);
@@ -60,10 +65,12 @@ export function UserManagementTable() {
           <h3 className="text-lg font-semibold">User Management</h3>
           <p className="text-sm text-foreground/90 mt-1">Manage platform users, roles, and access statuses.</p>
         </div>
-        <Button onClick={() => setShowInvite(!showInvite)} className="gap-2">
-          <MailPlus className="h-4 w-4" />
-          Invite Admin
-        </Button>
+        {isSuperAdmin && (
+          <Button onClick={() => setShowInvite(!showInvite)} className="gap-2">
+            <MailPlus className="h-4 w-4" />
+            Invite Admin
+          </Button>
+        )}
       </div>
 
       {showInvite && (
@@ -84,7 +91,7 @@ export function UserManagementTable() {
           {inviteLink && (
             <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-md">
               <p className="text-sm font-medium mb-1">Invite generated! Send this link to the new admin:</p>
-              <code className="text-xs break-all select-all">{window.location.origin}{inviteLink}</code>
+              <code className="text-xs break-all select-all">{inviteLink}</code>
             </div>
           )}
         </div>
@@ -116,7 +123,7 @@ export function UserManagementTable() {
                 <td className="px-6 py-4">
                   <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     user.role === 'admin' 
-                      ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' 
+                      ? 'bg-emerald-600/10 text-emerald-600 border border-emerald-600/20' 
                       : 'bg-muted text-foreground/90 border border-border/50'
                   }`}>
                     {user.role}
@@ -143,7 +150,7 @@ export function UserManagementTable() {
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-500/10"
+                        className="h-8 w-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10"
                         title="Send Notification"
                         onClick={() => setNotificationUser({ id: user.id, email: user.email })}
                       >
@@ -157,7 +164,7 @@ export function UserManagementTable() {
                           className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
                           title="Deactivate User"
                           onClick={() => deactivate.mutate(user.id)}
-                          disabled={deactivate.isPending}
+                          disabled={deactivate.isPending || (user.role === 'admin' && !isSuperAdmin)}
                         >
                           <UserX className="h-4 w-4" />
                         </Button>
@@ -168,7 +175,7 @@ export function UserManagementTable() {
                           className="h-8 w-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10"
                           title="Activate User"
                           onClick={() => activate.mutate(user.id)}
-                          disabled={activate.isPending}
+                          disabled={activate.isPending || (user.role === 'admin' && !isSuperAdmin)}
                         >
                           <UserCheck className="h-4 w-4" />
                         </Button>
@@ -180,7 +187,7 @@ export function UserManagementTable() {
                         className="h-8 w-8 text-destructive hover:bg-destructive/10"
                         title="Delete User"
                         onClick={() => remove.mutate(user.id)}
-                        disabled={remove.isPending}
+                        disabled={remove.isPending || (user.role === 'admin' && !isSuperAdmin)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -237,6 +244,55 @@ export function UserManagementTable() {
           userId={notificationUser.id}
           userEmail={notificationUser.email}
         />
+      )}
+
+      {isSuperAdmin && (
+        <div className="border-t border-border/50">
+          <div className="p-6">
+            <h4 className="text-md font-semibold mb-4">Pending Invitations</h4>
+            {invitesQuery.isLoading ? (
+              <div className="animate-pulse h-16 bg-muted/20 rounded-xl" />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-foreground/90 uppercase bg-muted/30">
+                    <tr>
+                      <th className="px-6 py-3 font-medium">Email</th>
+                      <th className="px-6 py-3 font-medium">Status</th>
+                      <th className="px-6 py-3 font-medium">Generated At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {(invitesQuery.data || []).map((inv: any) => (
+                      <tr key={inv.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="px-6 py-3">{inv.email}</td>
+                        <td className="px-6 py-3">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            inv.status === 'ACCEPTED' ? 'bg-emerald-500/10 text-emerald-500' :
+                            inv.status === 'EXPIRED' ? 'bg-destructive/10 text-destructive' :
+                            'bg-amber-500/10 text-amber-500'
+                          }`}>
+                            {inv.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-foreground/90">
+                          {format(new Date(inv.created_at), 'MMM d, yyyy HH:mm')}
+                        </td>
+                      </tr>
+                    ))}
+                    {(!invitesQuery.data || invitesQuery.data.length === 0) && (
+                      <tr>
+                        <td colSpan={3} className="px-6 py-4 text-center text-foreground/90">
+                          No invitations found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </GlassCard>
   );

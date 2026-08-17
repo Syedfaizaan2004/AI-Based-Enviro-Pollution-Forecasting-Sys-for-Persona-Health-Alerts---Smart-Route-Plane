@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { MessageSquare, Star, User, Clock, CheckCircle } from 'lucide-react';
+import { MessageSquare, Star, User, Clock } from 'lucide-react';
 import type { FeedbackResponse } from '@/features/feedback/services/feedbackService';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -24,7 +24,7 @@ export function FeedbackDetailsModal({ isOpen, onClose, feedback }: FeedbackDeta
       <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden bg-background/60 backdrop-blur-3xl border-border/50 shadow-2xl">
         {/* Animated Background Glow */}
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-600/10 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="bg-gradient-to-br from-primary/10 to-transparent p-6 border-b border-border/50 relative z-10">
           <DialogHeader>
@@ -118,7 +118,7 @@ export function FeedbackDetailsModal({ isOpen, onClose, feedback }: FeedbackDeta
               >
                 {feedback.status === 'reviewed' ? (
                   <>
-                    <Clock className="w-5 h-5 text-blue-400" />
+                    <Clock className="w-5 h-5 text-emerald-400" />
                     <p className="text-sm">Your feedback is currently under review by our team.</p>
                   </>
                 ) : (

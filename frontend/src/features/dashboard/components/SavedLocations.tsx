@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Navigation, Loader2, Edit2, Trash2, Plus } from 'lucide-react';
+import { MapPin, Loader2, Edit2, Trash2, Plus } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

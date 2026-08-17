@@ -29,7 +29,6 @@ i18n
     supportedLngs: LANGUAGE_OPTIONS.map((language) => language.code),
     nonExplicitSupportedLngs: false,
     // Don't block the initial render — translations load async in background
-    initImmediate: false,
     interpolation: {
       escapeValue: false // React already escapes values
     },

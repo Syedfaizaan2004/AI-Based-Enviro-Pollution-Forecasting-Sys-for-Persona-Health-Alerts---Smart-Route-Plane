@@ -15,7 +15,7 @@ export const LiveNavigationPanel = ({ liveMetrics, currentAqi, currentAqiCategor
       case 'Moderate': return 'text-amber-500';
       case 'Unhealthy for Sensitive Groups': return 'text-orange-500';
       case 'Unhealthy': return 'text-red-500';
-      case 'Very Unhealthy': return 'text-purple-500';
+      case 'Very Unhealthy': return 'text-emerald-600';
       case 'Hazardous': return 'text-rose-900';
       default: return 'text-emerald-500';
     }
@@ -56,7 +56,7 @@ export const LiveNavigationPanel = ({ liveMetrics, currentAqi, currentAqiCategor
         <div className="grid grid-cols-2 gap-3 mt-4">
           <div className="bg-muted/50 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
             <div className="flex items-center gap-1.5 mb-1">
-              <Navigation className="w-3.5 h-3.5 text-blue-500" />
+              <Navigation className="w-3.5 h-3.5 text-emerald-500" />
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Distance</span>
             </div>
             <p className="text-lg font-bold tabular-nums">

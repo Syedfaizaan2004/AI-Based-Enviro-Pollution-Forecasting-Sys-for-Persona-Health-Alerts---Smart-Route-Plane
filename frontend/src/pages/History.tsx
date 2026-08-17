@@ -19,13 +19,13 @@ export function History() {
     <div className="min-h-[calc(100vh-4rem)] bg-background pb-12 relative z-0 overflow-x-hidden">
       
       {/* Ambient Background Glows */}
-      <div className="fixed top-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none" />
+      <div className="fixed top-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-emerald-600/10 blur-[120px] pointer-events-none" />
 
       {/* Page Header */}
       <div className="px-4 md:px-6 lg:px-8 py-8 border-b border-white/5 bg-background/60 backdrop-blur-xl sticky top-0 z-20">
         <div className="flex items-center gap-4 max-w-[1920px] mx-auto">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/25">
             <Database className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -54,10 +54,10 @@ export function History() {
 
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-indigo-500/20 p-1.5 rounded-md shadow-inner shadow-indigo-500/20">
-                <LineChart className="h-4 w-4 text-indigo-500" />
+              <div className="bg-emerald-600/20 p-1.5 rounded-md shadow-inner shadow-emerald-600/20">
+                <LineChart className="h-4 w-4 text-emerald-600" />
               </div>
-              <h2 className="text-xs font-black uppercase tracking-widest text-indigo-500">Trend Analytics</h2>
+              <h2 className="text-xs font-black uppercase tracking-widest text-emerald-600">Trend Analytics</h2>
             </div>
             <AnalyticsCharts />
           </section>

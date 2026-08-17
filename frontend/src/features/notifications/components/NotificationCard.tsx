@@ -23,9 +23,9 @@ interface NotificationCardProps {
 const typeConfig: Record<NotificationType, { icon: any; color: string; bg: string }> = {
   health_alert: { icon: HeartPulse, color: 'text-rose-500', bg: 'bg-rose-500/10' },
   route_recommendation: { icon: Map, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-  system_alert: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  daily_summary: { icon: CalendarDays, color: 'text-violet-500', bg: 'bg-violet-500/10' },
-  weekly_summary: { icon: CalendarDays, color: 'text-violet-500', bg: 'bg-violet-500/10' },
+  system_alert: { icon: Info, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  daily_summary: { icon: CalendarDays, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
+  weekly_summary: { icon: CalendarDays, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
   emergency: { icon: AlertOctagon, color: 'text-destructive', bg: 'bg-destructive/10' },
 };
 
@@ -114,7 +114,7 @@ export function NotificationCard({ notification, onCloseDrawer }: NotificationCa
           )}
 
           {notification.aqi && (
-            <div className="flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted/50 text-blue-500">
+            <div className="flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted/50 text-emerald-500">
               AQI: {Math.round(notification.aqi)}
             </div>
           )}

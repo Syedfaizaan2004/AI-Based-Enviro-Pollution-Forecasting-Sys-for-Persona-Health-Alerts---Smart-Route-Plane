@@ -82,7 +82,7 @@ async def main():
             email=email,
             username=username,
             hashed_password=hashed_password,
-            role=UserRole.ADMIN,
+            role=UserRole.SUPER_ADMIN,
             is_active=True,
             is_verified=True
         )

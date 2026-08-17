@@ -12,7 +12,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.models.user import User
-from app.models.enums import UserRole
+from app.models.admin_invitation import AdminInvitation
+from app.models.enums import UserRole, InvitationStatus
 from app.schemas.user import UserCreate, UserRead, LoginRequest, LoginResponse
 from app.schemas.admin import AdminRegister
 from app.schemas.token import (
@@ -150,15 +151,23 @@ async def admin_register(
     admin_in: AdminRegister,
     db: AsyncSession = Depends(get_db)
 ):
-    if not redis_client:
-        raise HTTPException(status_code=500, detail="Redis is not configured")
+    # Check token in PostgreSQL database
+    invitation = await db.scalar(
+        select(AdminInvitation).where(
+            AdminInvitation.token == admin_in.token,
+            AdminInvitation.status == InvitationStatus.PENDING
+        )
+    )
+    
+    if not invitation:
+        raise HTTPException(status_code=400, detail="Invalid, expired, or already used invite token")
         
-    # Check token in Redis
-    stored_email = await redis_client.get(f"admin_invite:{admin_in.token}")
-    if not stored_email:
-        raise HTTPException(status_code=400, detail="Invalid or expired invite token")
+    if invitation.expires_at < datetime.now(timezone.utc):
+        invitation.status = InvitationStatus.EXPIRED
+        await db.commit()
+        raise HTTPException(status_code=400, detail="Invite token has expired")
         
-    if stored_email != admin_in.email:
+    if invitation.email != admin_in.email:
         raise HTTPException(status_code=400, detail="Email does not match the invite token")
         
     # Check if user exists
@@ -177,11 +186,12 @@ async def admin_register(
     )
     
     db.add(new_admin)
+    
+    # Mark invitation as accepted
+    invitation.status = InvitationStatus.ACCEPTED
+    
     await db.commit()
     await db.refresh(new_admin)
-    
-    # Delete token so it can't be reused
-    await redis_client.delete(f"admin_invite:{admin_in.token}")
     
     return new_admin
 

@@ -136,8 +136,8 @@ export const HeroSection = ({ data, location }: { data: DashboardSummaryResponse
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Temperature</span>
           </div>
           <div className="flex flex-col items-start bg-background/40 backdrop-blur-xl rounded-xl p-5 min-w-[140px] border border-border/40 shadow-sm relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <Droplets className="h-5 w-5 mb-3 text-sky-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Droplets className="h-5 w-5 mb-3 text-emerald-500" />
             <span className="text-4xl font-bold tracking-tighter text-foreground mb-1">
               {weather ? Math.round(weather.humidity) : '--'}<span className="text-lg text-muted-foreground">%</span>
             </span>
