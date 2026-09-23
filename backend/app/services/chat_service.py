@@ -63,7 +63,7 @@ class ChatService:
             raise ValueError("Groq API Key is missing.")
             
         self.client = AsyncGroq(api_key=settings.GROQ_API_KEY)
-        self.model = "llama-3.3-70b-versatile"
+        self.model = "openai/gpt-oss-120b"
         self.weather_client = OpenWeatherClient()
 
     async def _get_city_weather_and_aqi(self, city: str) -> str:
